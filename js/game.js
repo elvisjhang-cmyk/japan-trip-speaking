@@ -239,7 +239,6 @@ function viewSuccess(t) {
       <p class="ok">✅ 通じた！對方聽懂了</p>
       <p class="heard">你說：「${esc(t.heard)}」</p>
       ${t.switched ? `<p class="tip">你表達的是「${esc(c.zh)}」，劇情就照你說的走 👍</p>` : ''}
-      ${t.result.natural ? '' : `<p class="tip">意思對了！更自然的說法：<b>${esc(p.ja)}</b></p>`}
       <p class="stars-line">${esc(p.ja)} <span class="stars">${stars(g.after)}</span></p>
       <button class="btn primary wide" data-act="advance">繼續 ▶</button>
     </div>`;
@@ -445,6 +444,18 @@ function handleAnswer(alternatives) {
     if (t.chosen === null) { t.free = false; t.feedback += ' 先選一個想表達的意思吧。'; }
     render();
     if (r.heard) speak(ja, { pitch: who.pitch });
+    return;
+  }
+  if (!r.complete) {
+    // 只說了關鍵字（例如只說「抹茶」）：對方大概懂，但要說完整的句子才算學會
+    const p = PHRASES[t.choices[r.idx].phrase];
+    const who = speakerOf();
+    t.attempts++;
+    t.chosen = r.idx;
+    t.free = false;
+    t.feedback = `你說「${esc(r.heard)}」<br>${esc(who.name)}好像猜到你的意思了，但這樣只有單字。<br>試著說完整的句子：<b>${esc(p.ja)}</b>`;
+    t.fbType = 'info';
+    render();
     return;
   }
   t.switched = t.chosen !== null && r.idx !== t.chosen;

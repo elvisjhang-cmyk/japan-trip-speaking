@@ -3,45 +3,46 @@
 //
 // PHRASES：玩家要學會「說出口」的句子
 //   req   必要關鍵詞組：每一組至少要命中一個詞，才算意思正確
-//   bonus 加分詞組：缺少時仍算通過，但會提示更自然的說法
+//   full  完整句子必備的詞組：只說出關鍵字（例如只說「抹茶」）不算通過，會請玩家說完整
 //   neg   排除詞：出現就不算這個意思（例如「はい、大丈夫です」其實是拒絕）
 // 關鍵詞可以寫漢字、平假名、片假名，比對前會自動統一。
 
 const KUDASAI = ['ください', '下さい', 'おねがい', 'お願い'];
+const GA_II = ['がいい', 'にします', 'たべたい', '食べたい', 'ください', '下さい', 'おねがい', 'お願い'];
 const NO_THANKS = ['だいじょうぶ', '大丈夫', 'いらない', '要らない', 'いりません', '要りません', 'けっこう', '結構', 'いいえ'];
 
 export const PHRASES = {
   sumimasen:     { ja: 'すみません', kana: 'すみません', romaji: 'sumimasen', zh: '不好意思／請問', req: [['すみません', 'すいません', '済みません']] },
-  kore_kudasai:  { ja: 'これをください', kana: 'これをください', romaji: 'kore o kudasai', zh: '請給我這個', req: [['これ', 'こちら', 'それ']], bonus: [KUDASAI] },
-  hai:           { ja: 'はい、お願いします', kana: 'はい、おねがいします', romaji: 'hai, onegai shimasu', zh: '好，麻煩你了', req: [['はい', 'おねがい', 'お願い', 'ええ', 'うん']], neg: NO_THANKS },
+  kore_kudasai:  { ja: 'これをください', kana: 'これをください', romaji: 'kore o kudasai', zh: '請給我這個', req: [['これ', 'こちら', 'それ']], full: [KUDASAI] },
+  hai:           { ja: 'はい、お願いします', kana: 'はい、おねがいします', romaji: 'hai, onegai shimasu', zh: '好，麻煩你了', req: [['はい', 'おねがい', 'お願い', 'ええ', 'うん']], full: [['おねがい', 'お願い']], neg: NO_THANKS },
   daijoubu:      { ja: '大丈夫です', kana: 'だいじょうぶです', romaji: 'daijoubu desu', zh: '不用了，沒關係', req: [NO_THANKS], note: '日本人常用「大丈夫です」委婉地表示「不用了」。' },
-  fukuro_onegai: { ja: '袋をお願いします', kana: 'ふくろをおねがいします', romaji: 'fukuro o onegai shimasu', zh: '請給我袋子', req: [['ふくろ', '袋', 'おねがい', 'お願い', 'ください', '下さい', 'はい']], neg: NO_THANKS },
+  fukuro_onegai: { ja: '袋をお願いします', kana: 'ふくろをおねがいします', romaji: 'fukuro o onegai shimasu', zh: '請給我袋子', req: [['ふくろ', '袋', 'おねがい', 'お願い', 'ください', '下さい', 'はい']], full: [KUDASAI], neg: NO_THANKS },
   fukuro_iranai: { ja: '袋は大丈夫です', kana: 'ふくろはだいじょうぶです', romaji: 'fukuro wa daijoubu desu', zh: '不用袋子', req: [NO_THANKS] },
-  card:          { ja: 'カードでお願いします', kana: 'かーどでおねがいします', romaji: 'kaado de onegai shimasu', zh: '我用信用卡付', req: [['カード', 'クレジット']], bonus: [KUDASAI] },
-  genkin:        { ja: '現金でお願いします', kana: 'げんきんでおねがいします', romaji: 'genkin de onegai shimasu', zh: '我付現金', req: [['げんきん', '現金']], bonus: [KUDASAI] },
+  card:          { ja: 'カードでお願いします', kana: 'かーどでおねがいします', romaji: 'kaado de onegai shimasu', zh: '我用信用卡付', req: [['カード', 'クレジット']], full: [KUDASAI] },
+  genkin:        { ja: '現金でお願いします', kana: 'げんきんでおねがいします', romaji: 'genkin de onegai shimasu', zh: '我付現金', req: [['げんきん', '現金']], full: [KUDASAI] },
   arigatou:      { ja: 'ありがとうございます', kana: 'ありがとうございます', romaji: 'arigatou gozaimasu', zh: '謝謝', req: [['ありがと', '有難う', '有り難う']] },
   eki_doko:      { ja: '駅はどこですか', kana: 'えきはどこですか', romaji: 'eki wa doko desu ka', zh: '請問車站在哪裡？', req: [['えき', '駅'], ['どこ', '何処', 'どちら']] },
   mou_ichido:    { ja: 'もう一度お願いします', kana: 'もういちどおねがいします', romaji: 'mou ichido onegai shimasu', zh: '請再說一次', req: [['もういちど', 'もう一度', 'もう1度', 'もういっかい', 'もう一回', 'もう1回', 'ゆっくり']] },
   wakarimashita: { ja: 'わかりました', kana: 'わかりました', romaji: 'wakarimashita', zh: '我知道了', req: [['わかりました', '分かりました', '判りました', 'わかった', '分かった']] },
   hitori:        { ja: '一人です', kana: 'ひとりです', romaji: 'hitori desu', zh: '一個人', req: [['ひとり', '一人', '1人', '1名', '一名', 'いちめい']] },
-  ramen:         { ja: 'ラーメンをください', kana: 'らーめんをください', romaji: 'raamen o kudasai', zh: '請給我拉麵', req: [['ラーメン', '拉麺']], bonus: [KUDASAI] },
-  gyoza:         { ja: '餃子をください', kana: 'ぎょうざをください', romaji: 'gyouza o kudasai', zh: '請給我煎餃', req: [['ぎょうざ', '餃子', 'ギョーザ']], bonus: [KUDASAI] },
-  taiwan:        { ja: 'はい、台湾から来ました', kana: 'はい、たいわんからきました', romaji: 'hai, taiwan kara kimashita', zh: '是的，我從台灣來', req: [['たいわん', '台湾']] },
+  ramen:         { ja: 'ラーメンをください', kana: 'らーめんをください', romaji: 'raamen o kudasai', zh: '請給我拉麵', req: [['ラーメン', '拉麺']], full: [KUDASAI] },
+  gyoza:         { ja: '餃子をください', kana: 'ぎょうざをください', romaji: 'gyouza o kudasai', zh: '請給我煎餃', req: [['ぎょうざ', '餃子', 'ギョーザ']], full: [KUDASAI] },
+  taiwan:        { ja: 'はい、台湾から来ました', kana: 'はい、たいわんからきました', romaji: 'hai, taiwan kara kimashita', zh: '是的，我從台灣來', req: [['たいわん', '台湾']], full: [['から'], ['きました', '来ました', 'きた', '来た']] },
   oishii:        { ja: 'おいしいです', kana: 'おいしいです', romaji: 'oishii desu', zh: '很好吃', req: [['おいしい', '美味しい', 'うまい', '旨い', '美味い']] },
   ikitai:        { ja: '行きたいです！', kana: 'いきたいです！', romaji: 'ikitai desu!', zh: '我想去！', req: [['いきたい', '行きたい', 'いく', '行く', 'いきます', '行きます', 'ぜひ', '是非']], neg: ['いけない', '行けない', 'いけません', '行けません', 'いかない', '行かない'] },
   ikenai:        { ja: 'すみません、行けないです', kana: 'すみません、いけないです', romaji: 'sumimasen, ikenai desu', zh: '抱歉，我沒辦法去', req: [['いけない', '行けない', 'いけません', '行けません', 'ちょっと', 'むり', '無理']] },
-  okaikei:       { ja: 'お会計お願いします', kana: 'おかいけいおねがいします', romaji: 'okaikei onegai shimasu', zh: '麻煩結帳', req: [['かいけい', '会計', 'かんじょう', '勘定', 'チェック']] },
+  okaikei:       { ja: 'お会計お願いします', kana: 'おかいけいおねがいします', romaji: 'okaikei onegai shimasu', zh: '麻煩結帳', req: [['かいけい', '会計', 'かんじょう', '勘定', 'チェック']], full: [KUDASAI] },
   gochisousama:  { ja: 'ごちそうさまでした', kana: 'ごちそうさまでした', romaji: 'gochisousama deshita', zh: '謝謝招待（吃飽後說）', req: [['ごちそうさま', 'ご馳走様', '御馳走様', 'ごちそうさん']] },
   ikura:         { ja: 'いくらですか', kana: 'いくらですか', romaji: 'ikura desu ka', zh: '多少錢？', req: [['いくら', '幾ら']] },
-  kohii:         { ja: 'コーヒーをください', kana: 'こーひーをください', romaji: 'koohii o kudasai', zh: '請給我咖啡', req: [['コーヒー', '珈琲']], bonus: [KUDASAI] },
-  matcha:        { ja: '抹茶ラテをください', kana: 'まっちゃらてをください', romaji: 'maccha rate o kudasai', zh: '請給我抹茶拿鐵', req: [['まっちゃ', '抹茶']], bonus: [KUDASAI] },
-  tennai:        { ja: '店内でお願いします', kana: 'てんないでおねがいします', romaji: 'tennai de onegai shimasu', zh: '內用', req: [['てんない', '店内', 'ここで']] },
-  mochikaeri:    { ja: '持ち帰りでお願いします', kana: 'もちかえりでおねがいします', romaji: 'mochikaeri de onegai shimasu', zh: '外帶', req: [['もちかえり', '持ち帰り', '持ちかえり', 'テイクアウト']] },
-  omizu:         { ja: 'お水をください', kana: 'おみずをください', romaji: 'omizu o kudasai', zh: '請給我水', req: [['みず', '水', 'おひや', 'お冷']], bonus: [KUDASAI] },
+  kohii:         { ja: 'コーヒーをください', kana: 'こーひーをください', romaji: 'koohii o kudasai', zh: '請給我咖啡', req: [['コーヒー', '珈琲']], full: [KUDASAI] },
+  matcha:        { ja: '抹茶ラテをください', kana: 'まっちゃらてをください', romaji: 'maccha rate o kudasai', zh: '請給我抹茶拿鐵', req: [['まっちゃ', '抹茶']], full: [['ラテ', 'らて', 'latte'], KUDASAI] },
+  tennai:        { ja: '店内でお願いします', kana: 'てんないでおねがいします', romaji: 'tennai de onegai shimasu', zh: '內用', req: [['てんない', '店内', 'ここで']], full: [KUDASAI] },
+  mochikaeri:    { ja: '持ち帰りでお願いします', kana: 'もちかえりでおねがいします', romaji: 'mochikaeri de onegai shimasu', zh: '外帶', req: [['もちかえり', '持ち帰り', '持ちかえり', 'テイクアウト']], full: [KUDASAI] },
+  omizu:         { ja: 'お水をください', kana: 'おみずをください', romaji: 'omizu o kudasai', zh: '請給我水', req: [['みず', '水', 'おひや', 'お冷']], full: [KUDASAI] },
   konbanwa:      { ja: 'こんばんは', kana: 'こんばんは', romaji: 'konbanwa', zh: '晚安（晚上見面的招呼）', req: [['こんばんは', 'こんばんわ', '今晩は']] },
-  takoyaki:      { ja: 'たこ焼きがいいです', kana: 'たこやきがいいです', romaji: 'takoyaki ga ii desu', zh: '我想吃章魚燒', req: [['たこやき', 'たこ焼き', '蛸焼き']] },
-  yakisoba:      { ja: '焼きそばがいいです', kana: 'やきそばがいいです', romaji: 'yakisoba ga ii desu', zh: '我想吃炒麵', req: [['やきそば', '焼きそば', '焼そば']] },
-  futatsu:       { ja: '二つください', kana: 'ふたつください', romaji: 'futatsu kudasai', zh: '請給我兩個', req: [['ふたつ', '二つ', '2つ']], bonus: [KUDASAI] },
+  takoyaki:      { ja: 'たこ焼きがいいです', kana: 'たこやきがいいです', romaji: 'takoyaki ga ii desu', zh: '我想吃章魚燒', req: [['たこやき', 'たこ焼き', '蛸焼き']], full: [GA_II] },
+  yakisoba:      { ja: '焼きそばがいいです', kana: 'やきそばがいいです', romaji: 'yakisoba ga ii desu', zh: '我想吃炒麵', req: [['やきそば', '焼きそば', '焼そば']], full: [GA_II] },
+  futatsu:       { ja: '二つください', kana: 'ふたつください', romaji: 'futatsu kudasai', zh: '請給我兩個', req: [['ふたつ', '二つ', '2つ']], full: [KUDASAI] },
   mata_kimasu:   { ja: 'はい、また来ます', kana: 'はい、またきます', romaji: 'hai, mata kimasu', zh: '會，我會再來', req: [['また', '又'], ['きます', '来ます', 'くる', '来る', 'きたい', '来たい']] },
   aitai:         { ja: 'また会いたいです', kana: 'またあいたいです', romaji: 'mata aitai desu', zh: '我想再見到你', req: [['あいたい', '会いたい', '逢いたい']] },
   motteinai:     { ja: '持っていないです', kana: 'もっていないです', romaji: 'motte inai desu', zh: '沒有', req: [['ない', 'ありません', 'いいえ', 'だいじょうぶ', '大丈夫']] },

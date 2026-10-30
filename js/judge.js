@@ -75,13 +75,13 @@ export function normalize(text) {
 
 const has = (t, words) => words.some(w => t.includes(normalize(w)));
 
-// 回傳 null（意思不符）或 { natural }（意思正確；natural=false 表示缺少比較自然的部分）
+// 回傳 null（意思不符）或 { complete }（意思正確；complete=false 表示只說了關鍵字，句子不完整）
 export function matchPhrase(text, phrase) {
   const t = normalize(text);
   if (!t) return null;
   if (phrase.neg && has(t, phrase.neg)) return null;
   if (!phrase.req.every(group => has(t, group))) return null;
-  return { natural: !phrase.bonus || phrase.bonus.every(group => has(t, group)) };
+  return { complete: !phrase.full || phrase.full.every(group => has(t, group)) };
 }
 
 // alternatives：語音辨識的多個候選結果（或打字的一句）
@@ -91,12 +91,16 @@ export function matchPhrase(text, phrase) {
 export function judge(alternatives, options, phrases, preferIdx = -1, metaPhrase = null) {
   const order = options.map((_, i) => i);
   if (preferIdx >= 0) order.sort((a, b) => (b === preferIdx) - (a === preferIdx));
+  // 完整句子優先；都不完整時，回傳第一個「意思對但不完整」的結果
+  let partial = null;
   for (const i of order) {
     for (const alt of alternatives) {
       const r = matchPhrase(alt, phrases[options[i].phrase]);
-      if (r) return { idx: i, natural: r.natural, heard: alt };
+      if (r?.complete) return { idx: i, complete: true, heard: alt };
+      if (r && !partial) partial = { idx: i, complete: false, heard: alt };
     }
   }
+  if (partial) return partial;
   if (metaPhrase) {
     for (const alt of alternatives) {
       if (matchPhrase(alt, metaPhrase)) return { idx: -1, meta: 'repeat', heard: alt };
