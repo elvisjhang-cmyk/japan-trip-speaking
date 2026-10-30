@@ -44,6 +44,7 @@ export const PHRASES = {
   futatsu:       { ja: '二つください', kana: 'ふたつください', romaji: 'futatsu kudasai', zh: '請給我兩個', req: [['ふたつ', '二つ', '2つ']], bonus: [KUDASAI] },
   mata_kimasu:   { ja: 'はい、また来ます', kana: 'はい、またきます', romaji: 'hai, mata kimasu', zh: '會，我會再來', req: [['また', '又'], ['きます', '来ます', 'くる', '来る', 'きたい', '来たい']] },
   aitai:         { ja: 'また会いたいです', kana: 'またあいたいです', romaji: 'mata aitai desu', zh: '我想再見到你', req: [['あいたい', '会いたい', '逢いたい']] },
+  motteinai:     { ja: '持っていないです', kana: 'もっていないです', romaji: 'motte inai desu', zh: '沒有', req: [['ない', 'ありません', 'いいえ', 'だいじょうぶ', '大丈夫']] },
 };
 
 // 遇到聽不懂時，在任何對話都能說的「萬用求救句」
@@ -55,12 +56,17 @@ export const SKILLS = [
   { name: '🗺️ 問路求助', phrases: ['sumimasen', 'eki_doko', 'mou_ichido', 'wakarimashita'] },
   { name: '🍜 餐廳點餐', phrases: ['hitori', 'ramen', 'omizu', 'okaikei', 'gochisousama'] },
   { name: '💬 跟人聊天', phrases: ['taiwan', 'oishii', 'konbanwa', 'ikitai'] },
+  { name: '👂 聽懂店員', listen: ['irasshaimase', 'atatame', 'fukuro', 'shiharai', 'point', 'chuumon', 'tennai', 'michi_annai', 'nanahyaku', 'gohyakuen', 'ninki'] },
 ];
 
 // QUESTS：每一天早上可選的支線
 // 節點：
 //   narr     旁白（中文）
-//   npc      NPC 台詞 { who, ja, kana, zh, concept }；concept 相同的台詞第二次出現時不顯示字幕
+//   npc      NPC 台詞 { who, ja, kana, zh, concept, keys, alt, quiz }
+//            concept 相同的台詞第二次出現時不顯示字幕，改成聽力題（「對方剛剛說的是？」）
+//            keys  聽力關鍵詞 [['日文', '中文']]，顯示字幕時一起教
+//            alt   聽力題的干擾選項（容易搞混的意思）；沒寫就從其他台詞隨機挑
+//            quiz  一定要先聽懂才顯示字幕的題目 { q, options, answer }（例如價錢、路線）
 //   choices  玩家回合 [{ zh, phrase, next, hint, flag }]
 //   next     沒有玩家回合時，按「繼續」前往的節點
 //   end      支線結束
@@ -73,22 +79,34 @@ export const QUESTS = [
     start: 's',
     nodes: {
       s:  { narr: '你拿了一個飯糰和一個便當，走到櫃台。', next: 'n1' },
-      n1: { npc: { who: 'clerk', ja: 'いらっしゃいませ！', kana: 'いらっしゃいませ', zh: '歡迎光臨！', concept: 'irasshaimase' },
+      n1: { npc: { who: 'clerk', ja: 'いらっしゃいませ！', kana: 'いらっしゃいませ', zh: '歡迎光臨！', concept: 'irasshaimase',
+                   keys: [['いらっしゃいませ', '歡迎光臨（不用回答，點頭就好）']], alt: ['謝謝光臨！', '請稍等一下。'] },
             choices: [{ zh: '（把商品放上櫃台）請給我這些', phrase: 'kore_kudasai', hint: '指著商品，說「這個」＋「請給我」', next: 'n2' }] },
-      n2: { npc: { who: 'clerk', ja: 'お弁当、温めますか？', kana: 'おべんとう、あたためますか？', zh: '便當要幫你加熱嗎？', concept: 'atatame' },
+      n2: { npc: { who: 'clerk', ja: 'お弁当、温めますか？', kana: 'おべんとう、あたためますか？', zh: '便當要幫你加熱嗎？', concept: 'atatame',
+                   keys: [['お弁当', '便當'], ['温めますか', '要加熱嗎']], alt: ['需要袋子嗎？', '需要筷子嗎？'] },
             choices: [
               { zh: '要，麻煩加熱', phrase: 'hai', hint: '先說「是」，再加上「麻煩了」', next: 'n3a' },
               { zh: '不用了', phrase: 'daijoubu', hint: '日本人會用「沒問題」來表示不用', next: 'n3' }] },
-      n3a: { npc: { who: 'clerk', ja: 'かしこまりました。少々お待ちください。', kana: 'かしこまりました。しょうしょうおまちください。', zh: '好的，請稍等。', concept: 'shoushou' }, next: 'n3' },
-      n3: { npc: { who: 'clerk', ja: '袋はご利用ですか？', kana: 'ふくろはごりようですか？', zh: '需要袋子嗎？', concept: 'fukuro' },
+      n3a: { npc: { who: 'clerk', ja: 'かしこまりました。少々お待ちください。', kana: 'かしこまりました。しょうしょうおまちください。', zh: '好的，請稍等。', concept: 'shoushou',
+                    keys: [['かしこまりました', '好的（我明白了）'], ['少々お待ちください', '請稍等']] }, next: 'n3' },
+      n3: { npc: { who: 'clerk', ja: '袋はご利用ですか？', kana: 'ふくろはごりようですか？', zh: '需要袋子嗎？', concept: 'fukuro',
+                   keys: [['袋', '袋子'], ['ご利用ですか', '要使用嗎']], alt: ['便當要加熱嗎？', '有集點卡嗎？'] },
             choices: [
               { zh: '要袋子', phrase: 'fukuro_onegai', hint: '「袋子」＋「麻煩了」', next: 'n4' },
               { zh: '不用袋子', phrase: 'fukuro_iranai', hint: '跟剛剛「不用加熱」一樣的說法', next: 'n4' }] },
-      n4: { npc: { who: 'clerk', ja: 'お支払いはどうされますか？', kana: 'おしはらいはどうされますか？', zh: '請問要怎麼付款？', concept: 'shiharai' },
-            choices: [
-              { zh: '刷卡', phrase: 'card', hint: '「卡」的日文就是英文 card', next: 'n5' },
-              { zh: '付現金', phrase: 'genkin', hint: '現金的音讀', next: 'n5' }] },
-      n5: { npc: { who: 'clerk', ja: 'ありがとうございました！', kana: 'ありがとうございました', zh: '謝謝光臨！', concept: 'arigatou_shop' },
+      n4: { npc: { who: 'clerk', ja: 'ポイントカードはお持ちですか？', kana: 'ぽいんとかーどはおもちですか？', zh: '有集點卡嗎？', concept: 'point',
+                   keys: [['ポイントカード', '集點卡'], ['お持ちですか', '有帶嗎']], alt: ['要用信用卡付嗎？', '需要袋子嗎？'] },
+            choices: [{ zh: '沒有', phrase: 'motteinai', hint: '日本結帳幾乎都會問這句。「有」是 ある，「沒有」就是…', next: 'n4b' }] },
+      n4b: { npc: { who: 'clerk', ja: 'お支払いはどうされますか？', kana: 'おしはらいはどうされますか？', zh: '請問要怎麼付款？', concept: 'shiharai',
+                    keys: [['お支払い', '付款'], ['どうされますか', '要怎麼做']], alt: ['有集點卡嗎？', '要幫你加熱嗎？'] },
+             choices: [
+               { zh: '刷卡', phrase: 'card', hint: '「卡」的日文就是英文 card', next: 'n4c' },
+               { zh: '付現金', phrase: 'genkin', hint: '現金的音讀', next: 'n4c' }] },
+      n4c: { npc: { who: 'clerk', ja: '七百八十円になります。', kana: 'ななひゃくはちじゅうえんになります。', zh: '這樣是七百八十日圓。', concept: 'nanahyaku',
+                    keys: [['七百', '700'], ['八十', '80'], ['円になります', '日圓（店員的禮貌說法）']],
+                    quiz: { q: '一共多少錢？', options: ['780 日圓', '1780 日圓', '870 日圓'], answer: 0 } }, next: 'n5' },
+      n5: { npc: { who: 'clerk', ja: 'ありがとうございました！', kana: 'ありがとうございました', zh: '謝謝光臨！', concept: 'arigatou_shop',
+                   keys: [['ありがとうございました', '謝謝光臨（結帳後店員說的）']], alt: ['歡迎光臨！', '請稍等一下。'] },
             choices: [{ zh: '謝謝', phrase: 'arigatou', hint: '店員剛剛說的那句，改成現在式', next: 'end' }] },
       end: { end: true, narr: '你拿著早餐走出便利商店。第一次用日文買東西，成功！' },
     },
@@ -103,7 +121,9 @@ export const QUESTS = [
       s:  { narr: '先叫住阿姨吧。', choices: [{ zh: '不好意思（叫住對方）', phrase: 'sumimasen', hint: '日本最萬用的一句話', next: 'n2' }] },
       n2: { npc: { who: 'obasan', ja: 'はい、どうしましたか？', kana: 'はい、どうしましたか？', zh: '是，怎麼了嗎？', concept: 'doushimashita' },
             choices: [{ zh: '請問車站在哪裡？', phrase: 'eki_doko', hint: '「車站」＋「在哪裡」＋「嗎」', next: 'n3' }] },
-      n3: { npc: { who: 'obasan', ja: '駅ですか？ この道をまっすぐ行って、二つ目の信号を右に曲がってください。', kana: 'えきですか？ このみちをまっすぐいって、ふたつめのしんごうをみぎにまがってください。', zh: '車站嗎？這條路直走，在第二個紅綠燈右轉。', concept: 'michi_annai' },
+      n3: { npc: { who: 'obasan', ja: '駅ですか？ この道をまっすぐ行って、二つ目の信号を右に曲がってください。', kana: 'えきですか？ このみちをまっすぐいって、ふたつめのしんごうをみぎにまがってください。', zh: '車站嗎？這條路直走，在第二個紅綠燈右轉。', concept: 'michi_annai',
+                   keys: [['まっすぐ', '直走'], ['二つ目', '第二個'], ['信号', '紅綠燈'], ['右に曲がって', '右轉']],
+                   quiz: { q: '阿姨說要怎麼走？', options: ['直走，第二個紅綠燈右轉', '直走，第一個紅綠燈左轉', '右轉之後一直直走'], answer: 0 } },
             choices: [
               { zh: '聽不太懂，請再說一次', phrase: 'mou_ichido', hint: '「再一次」＋「麻煩了」', next: 'n4' },
               { zh: '我知道了', phrase: 'wakarimashita', hint: '「わかる」的過去式', next: 'n5' }] },
@@ -126,13 +146,16 @@ export const QUESTS = [
     start: 's',
     nodes: {
       s:  { narr: '推開店門，熱氣撲面而來。', next: 'n1' },
-      n1: { npc: { who: 'master', ja: 'いらっしゃい！ 何名様ですか？', kana: 'いらっしゃい！ なんめいさまですか？', zh: '歡迎！請問幾位？', concept: 'nanmei' },
+      n1: { npc: { who: 'master', ja: 'いらっしゃい！ 何名様ですか？', kana: 'いらっしゃい！ なんめいさまですか？', zh: '歡迎！請問幾位？', concept: 'nanmei',
+                   keys: [['何名様', '幾位客人']], alt: ['要點什麼？', '要內用嗎？'] },
             choices: [{ zh: '一個人', phrase: 'hitori', hint: '「一個人」＋「です」', next: 'n2' }] },
-      n2: { npc: { who: 'master', ja: 'カウンターへどうぞ。ご注文は？', kana: 'かうんたーへどうぞ。ごちゅうもんは？', zh: '請坐吧台。要點什麼？', concept: 'chuumon' },
+      n2: { npc: { who: 'master', ja: 'カウンターへどうぞ。ご注文は？', kana: 'かうんたーへどうぞ。ごちゅうもんは？', zh: '請坐吧台。要點什麼？', concept: 'chuumon',
+                   keys: [['カウンター', '吧台'], ['ご注文', '點餐']], alt: ['請問幾位？', '要內用還是外帶？'] },
             choices: [
               { zh: '拉麵', phrase: 'ramen', hint: '餐點名稱＋「をください」', next: 'n3' },
               { zh: '煎餃', phrase: 'gyoza', hint: '餐點名稱＋「をください」', next: 'n3' }] },
-      n3: { npc: { who: 'master', ja: 'はいよ、少々お待ち！', kana: 'はいよ、しょうしょうおまち！', zh: '好嘞，稍等一下！', concept: 'shoushou' }, next: 'n4' },
+      n3: { npc: { who: 'master', ja: 'はいよ、少々お待ち！', kana: 'はいよ、しょうしょうおまち！', zh: '好嘞，稍等一下！', concept: 'shoushou',
+                   keys: [['少々お待ち', '稍等一下']], alt: ['謝謝惠顧！', '要點什麼？'] }, next: 'n4' },
       n4: { narr: '隔壁座位的女生看你在研究菜單，笑著轉過來。', next: 'n5' },
       n5: { npc: { who: 'yui', ja: 'こんばんは。観光ですか？', kana: 'こんばんは。かんこうですか？', zh: '晚安。你是來觀光的嗎？', concept: 'kankou' },
             choices: [{ zh: '是的，我從台灣來', phrase: 'taiwan', hint: '「台灣」＋「從」＋「來了」', next: 'n6' }] },
@@ -147,7 +170,9 @@ export const QUESTS = [
       n10: { npc: { who: 'yui', ja: 'やった！ じゃあ、明日の七時に、神社の前で。', kana: 'やった！ じゃあ、あしたのしちじに、じんじゃのまえで。', zh: '太好了！那明天七點，神社前面見。', concept: 'yakusoku' }, next: 'n11' },
       n10b: { npc: { who: 'yui', ja: 'そっか、残念。じゃあ、またどこかで。', kana: 'そっか、ざんねん。じゃあ、またどこかで。', zh: '這樣啊，好可惜。那有緣再見囉。', concept: 'zannen' }, next: 'n11' },
       n11: { narr: '吃飽了，該結帳了。', choices: [{ zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n12' }] },
-      n12: { npc: { who: 'master', ja: '千円です。まいど！', kana: 'せんえんです。まいど！', zh: '一千日圓。謝謝惠顧！', concept: 'senen' },
+      n12: { npc: { who: 'master', ja: '千百円です。まいど！', kana: 'せんひゃくえんです。まいど！', zh: '一千一百日圓。謝謝惠顧！', concept: 'senen',
+                    keys: [['千百円', '1100 日圓'], ['まいど', '謝謝惠顧（關西口語）']],
+                    quiz: { q: '老闆說多少錢？', options: ['1100 日圓', '1000 日圓', '700 日圓'], answer: 0 } },
              choices: [{ zh: '謝謝招待（吃飽後的禮貌話）', phrase: 'gochisousama', hint: '吃完飯一定要說的一句', next: 'end' }] },
       end: { end: true, narr: '走出拉麵店，夜風很舒服。明天……會發生什麼呢？' },
     },
@@ -159,17 +184,22 @@ export const QUESTS = [
     cast: { staff: { name: '店員', emoji: '👩‍💼', pitch: 1.15 } },
     start: 'n1',
     nodes: {
-      n1: { npc: { who: 'staff', ja: 'いらっしゃいませ。ご注文はお決まりですか？', kana: 'いらっしゃいませ。ごちゅうもんはおきまりですか？', zh: '歡迎光臨。決定好要點什麼了嗎？', concept: 'chuumon' },
+      n1: { npc: { who: 'staff', ja: 'いらっしゃいませ。ご注文はお決まりですか？', kana: 'いらっしゃいませ。ごちゅうもんはおきまりですか？', zh: '歡迎光臨。決定好要點什麼了嗎？', concept: 'chuumon',
+                   keys: [['ご注文', '點餐'], ['お決まりですか', '決定了嗎']], alt: ['請問幾位？', '要內用還是外帶？'] },
             choices: [
               { zh: '咖啡', phrase: 'kohii', hint: '跟昨天點拉麵一樣的句型', next: 'n2' },
               { zh: '抹茶拿鐵', phrase: 'matcha', hint: '跟昨天點拉麵一樣的句型', next: 'n2' }] },
-      n2: { npc: { who: 'staff', ja: '店内でお召し上がりですか？', kana: 'てんないでおめしあがりですか？', zh: '在店內用餐嗎？', concept: 'tennai' },
+      n2: { npc: { who: 'staff', ja: '店内でお召し上がりですか？', kana: 'てんないでおめしあがりですか？', zh: '在店內用餐嗎？', concept: 'tennai',
+                   keys: [['店内で', '在店裡'], ['お召し上がり', '享用（吃、喝的敬語）']], alt: ['決定好要點什麼了嗎？', '要加冰塊嗎？'] },
             choices: [
               { zh: '內用', phrase: 'tennai', hint: '店員話裡的第一個詞', next: 'n3' },
               { zh: '外帶', phrase: 'mochikaeri', hint: '「拿著回家」', next: 'n3' }] },
       n3: { narr: '你想先確認價錢。', choices: [{ zh: '多少錢？', phrase: 'ikura', hint: '問價錢的固定說法', next: 'n4' }] },
-      n4: { npc: { who: 'staff', ja: '五百円です。', kana: 'ごひゃくえんです。', zh: '五百日圓。', concept: 'gohyakuen' }, next: 'n5' },
-      n5: { npc: { who: 'staff', ja: 'お支払いはどうされますか？', kana: 'おしはらいはどうされますか？', zh: '請問要怎麼付款？', concept: 'shiharai' },
+      n4: { npc: { who: 'staff', ja: '五百五十円です。', kana: 'ごひゃくごじゅうえんです。', zh: '五百五十日圓。', concept: 'gohyakuen',
+                   keys: [['五百', '500'], ['五十', '50']],
+                   quiz: { q: '店員說多少錢？', options: ['550 日圓', '505 日圓', '1550 日圓'], answer: 0 } }, next: 'n5' },
+      n5: { npc: { who: 'staff', ja: 'お支払い方法はいかがなさいますか？', kana: 'おしはらいほうほうはいかがなさいますか？', zh: '付款方式要用哪一種呢？', concept: 'shiharai',
+                   keys: [['お支払い方法', '付款方式'], ['いかがなさいますか', '您要怎麼做呢（很客氣）']], alt: ['有集點卡嗎？', '在店內用餐嗎？'] },
             choices: [
               { zh: '刷卡', phrase: 'card', hint: '昨天在便利商店說過', next: 'n6' },
               { zh: '付現金', phrase: 'genkin', hint: '昨天在便利商店說過', next: 'n6' }] },
@@ -187,21 +217,30 @@ export const QUESTS = [
     start: 's',
     nodes: {
       s:  { narr: '你看到一盒很漂亮的抹茶點心，想問問看。', choices: [{ zh: '不好意思（叫住店員）', phrase: 'sumimasen', hint: '昨天問路時用過', next: 'n2' }] },
-      n2: { npc: { who: 'staff', ja: 'はい、いらっしゃいませ。', kana: 'はい、いらっしゃいませ。', zh: '是，歡迎光臨。', concept: 'irasshaimase' },
+      n2: { npc: { who: 'staff', ja: 'はい、いらっしゃいませ。', kana: 'はい、いらっしゃいませ。', zh: '是，歡迎光臨。', concept: 'irasshaimase',
+                   keys: [['いらっしゃいませ', '歡迎光臨']], alt: ['謝謝光臨！', '請稍等一下。'] },
             choices: [{ zh: '（指著點心）這個多少錢？', phrase: 'ikura', hint: '問價錢的固定說法', next: 'n3' }] },
-      n3: { npc: { who: 'staff', ja: 'こちらは千二百円です。人気ですよ。', kana: 'こちらはせんにひゃくえんです。にんきですよ。', zh: '這個是一千兩百日圓，很受歡迎喔。', concept: 'ninki' },
+      n3: { npc: { who: 'staff', ja: 'こちらは千二百円です。人気ですよ。', kana: 'こちらはせんにひゃくえんです。にんきですよ。', zh: '這個是一千兩百日圓，很受歡迎喔。', concept: 'ninki',
+                   keys: [['千二百円', '1200 日圓'], ['人気', '受歡迎']],
+                   quiz: { q: '這盒點心多少錢？', options: ['1200 日圓', '2100 日圓', '1020 日圓'], answer: 0 } },
             choices: [
               { zh: '請給我這個', phrase: 'kore_kudasai', hint: '昨天在便利商店說過', next: 'n4' },
               { zh: '不用了（婉拒）', phrase: 'daijoubu', hint: '委婉說「不用了」', next: 'end_no' }] },
-      n4: { npc: { who: 'staff', ja: '袋はご利用ですか？', kana: 'ふくろはごりようですか？', zh: '需要袋子嗎？', concept: 'fukuro' },
+      n4: { npc: { who: 'staff', ja: '袋、お付けしますか？', kana: 'ふくろ、おつけしますか？', zh: '要幫你裝袋嗎？', concept: 'fukuro',
+                   keys: [['袋', '袋子'], ['お付けしますか', '要幫你附上嗎']], alt: ['要包裝成禮物嗎？', '有集點卡嗎？'] },
             choices: [
-              { zh: '要袋子', phrase: 'fukuro_onegai', next: 'n5' },
-              { zh: '不用袋子', phrase: 'fukuro_iranai', next: 'n5' }] },
-      n5: { npc: { who: 'staff', ja: 'お支払いはどうされますか？', kana: 'おしはらいはどうされますか？', zh: '請問要怎麼付款？', concept: 'shiharai' },
+              { zh: '要袋子', phrase: 'fukuro_onegai', next: 'n4b' },
+              { zh: '不用袋子', phrase: 'fukuro_iranai', next: 'n4b' }] },
+      n4b: { npc: { who: 'staff', ja: 'ポイントカード、お持ちですか？', kana: 'ぽいんとかーど、おもちですか？', zh: '有集點卡嗎？', concept: 'point',
+                    keys: [['ポイントカード', '集點卡'], ['お持ちですか', '有帶嗎']], alt: ['要用信用卡付嗎？', '要幫你裝袋嗎？'] },
+             choices: [{ zh: '沒有', phrase: 'motteinai', next: 'n5' }] },
+      n5: { npc: { who: 'staff', ja: 'お支払いはどうされますか？', kana: 'おしはらいはどうされますか？', zh: '請問要怎麼付款？', concept: 'shiharai',
+                   keys: [['お支払い', '付款'], ['どうされますか', '要怎麼做']], alt: ['有集點卡嗎？', '要幫你裝袋嗎？'] },
             choices: [
               { zh: '刷卡', phrase: 'card', next: 'n6' },
               { zh: '付現金', phrase: 'genkin', next: 'n6' }] },
-      n6: { npc: { who: 'staff', ja: 'ありがとうございました！', kana: 'ありがとうございました', zh: '謝謝光臨！', concept: 'arigatou_shop' },
+      n6: { npc: { who: 'staff', ja: 'ありがとうございました！', kana: 'ありがとうございました', zh: '謝謝光臨！', concept: 'arigatou_shop',
+                   keys: [['ありがとうございました', '謝謝光臨（結帳後店員說的）']], alt: ['歡迎光臨！', '請稍等一下。'] },
             choices: [{ zh: '謝謝', phrase: 'arigatou', next: 'end' }] },
       end: { end: true, narr: '伴手禮買好了！同事一定會很開心。' },
       end_no: { end: true, narr: '你笑著點頭離開。會婉拒，也是很重要的能力！' },
@@ -230,7 +269,9 @@ export const QUESTS = [
       n4: { narr: '你們走到攤位前。', next: 'n5' },
       n5: { npc: { who: 'oji', ja: 'へい、らっしゃい！ いくつ？', kana: 'へい、らっしゃい！ いくつ？', zh: '嘿，歡迎！要幾份？', concept: 'ikutsu' },
             choices: [{ zh: '請給我兩份', phrase: 'futatsu', hint: '「兩個」＋「請給我」', next: 'n6' }] },
-      n6: { npc: { who: 'oji', ja: 'はいよ、六百円！', kana: 'はいよ、ろっぴゃくえん！', zh: '好嘞，六百日圓！', concept: 'roppyaku' }, next: 'n7' },
+      n6: { npc: { who: 'oji', ja: 'はいよ、二つで千円！', kana: 'はいよ、ふたつでせんえん！', zh: '好嘞，兩份一千日圓！', concept: 'roppyaku',
+                   keys: [['二つで', '兩個一共'], ['千円', '1000 日圓']],
+                   quiz: { q: '兩份一共多少錢？', options: ['1000 日圓', '500 日圓', '2000 日圓'], answer: 0 } }, next: 'n7' },
       n7: { narr: '你付了錢，把一份遞給結衣。', next: 'n8' },
       n8: { npc: { who: 'yui', ja: 'え、いいんですか？ ありがとう！ ……ん、おいしい！', kana: 'え、いいんですか？ ありがとう！ ……ん、おいしい！', zh: '欸，可以嗎？謝謝！……嗯，好好吃！', concept: 'iindesuka' },
             choices: [{ zh: '很好吃呢', phrase: 'oishii', hint: '昨天在拉麵店說過', next: 'n9' }] },

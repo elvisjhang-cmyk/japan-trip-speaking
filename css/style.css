@@ -151,6 +151,10 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .bubble .ja { font-size: 22px; font-weight: 700; margin: 0; }
 .bubble .kana { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
 .bubble .zh { margin: 6px 0 0; color: var(--indigo); }
+.keys { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.keys span { background: var(--warn-soft); border-radius: 8px; padding: 2px 8px; font-size: 13px; }
+.feedback.ok { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+.sheet h4 { margin: 14px 0 8px; font-size: 14px; color: var(--muted); }
 .nosub { margin: 0; font-size: 22px; font-weight: 700; }
 .nosub small { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }

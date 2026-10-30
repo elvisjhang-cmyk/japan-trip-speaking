@@ -14,7 +14,10 @@ const CONFUSED = [['え？', '欸？'], ['すみません、もう一度……�
 const app = document.getElementById('app');
 
 function freshSave() {
-  return { day: 1, finished: false, mastery: {}, exposure: {}, done: [], flags: {}, settings: { quiet: !asrSupported, alwaysSub: false } };
+  return {
+    day: 1, finished: false, mastery: {}, listen: {}, heard: {}, exposure: {}, done: [], flags: {},
+    settings: { quiet: !asrSupported, alwaysSub: false },
+  };
 }
 function load() {
   try {
@@ -35,6 +38,8 @@ let toast = '';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const mastery = id => save.mastery[id] ?? 0;
+const listenLevel = concept => save.listen[concept] ?? 0;
+const shuffle = arr => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(([, v]) => v);
 const stars = n => '★'.repeat(n) + '☆'.repeat(MAX_MASTERY - n);
 const unlocked = q => !q.requires || save.flags[q.requires];
 const quiet = () => save.settings.quiet || !asrSupported;
@@ -134,21 +139,34 @@ function viewScene() {
 }
 
 function viewBubble(npc) {
-  const show = cur.subShown || cur.subRevealed;
+  const quiz = cur.quiz;
+  const pending = quiz && quiz.picked === null;
+  const show = !pending && (cur.subShown || cur.subRevealed || quiz);
+  const answer = quiz?.options.find(o => o.correct)?.text;
   return `<div class="bubble">
     ${show
-      ? `<p class="ja">${esc(npc.ja)}</p>${differs(npc.kana, npc.ja) ? `<p class="kana">${esc(npc.kana)}</p>` : ''}<p class="zh">${esc(npc.zh)}</p>`
-      : '<p class="nosub">🔊 ・・・<small>這句你聽過了，這次沒有字幕。用耳朵聽聽看！</small></p>'}
+      ? `<p class="ja">${esc(npc.ja)}</p>${differs(npc.kana, npc.ja) ? `<p class="kana">${esc(npc.kana)}</p>` : ''}<p class="zh">${esc(npc.zh)}</p>
+         ${npc.keys ? `<p class="keys">${npc.keys.map(([ja, zh]) => `<span><b>${esc(ja)}</b>＝${esc(zh)}</span>`).join('')}</p>` : ''}`
+      : `<p class="nosub">🔊 ・・・<small>${pending ? '先不看字幕，用耳朵聽聽看。可以多聽幾次！' : '這句你聽過了，這次沒有字幕。'}</small></p>`}
+    ${quiz && !pending
+      ? `<p class="feedback ${quiz.correct ? 'ok' : 'warn'}">${quiz.correct ? '👂 聽懂了！' : `沒關係，答案是「${esc(answer)}」。記住上面的關鍵字，下次就聽得出來。`}</p>`
+      : ''}
     <div class="tools">
       <button class="chip" data-act="replay">🔊 再聽</button>
       <button class="chip" data-act="replaySlow">🐢 慢速</button>
-      ${show ? '' : '<button class="chip" data-act="reveal">字 顯示字幕</button>'}
+      ${show ? '' : `<button class="chip" data-act="reveal">${pending ? '聽不出來，看字幕' : '字 顯示字幕'}</button>`}
     </div>
   </div>`;
 }
 
+function viewQuiz(quiz) {
+  return `<p class="prompt">👂 ${esc(quiz.q)}</p>
+    <div class="choices">${quiz.options.map((o, i) => `<button class="choice" data-act="quizPick" data-i="${i}">${esc(o.text)}</button>`).join('')}</div>`;
+}
+
 function viewPanel() {
   const t = cur.turn;
+  if (cur.quiz && cur.quiz.picked === null) return viewQuiz(cur.quiz);
   if (!t) return '<button class="btn primary wide" data-act="next">繼續 ▶</button>';
   if (t.result) return viewSuccess(t);
   if (t.chosen === null && t.free) {
@@ -234,11 +252,18 @@ function viewResult() {
     return `<li><div><b>${esc(p.ja)}</b><small>${esc(p.zh)}</small></div>
       <span class="stars">${stars(g.after)}</span><em class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${delta > 0 ? '↑' : delta < 0 ? '再練練' : '—'}</em></li>`;
   }).join('');
+  const listenRows = Object.entries(cur.listenGains).map(([id, g]) => {
+    const h = save.heard[id];
+    const delta = g.after - g.before;
+    return `<li><div><b>${esc(h.ja)}</b><small>${esc(h.zh)}</small></div>
+      <span class="stars">${stars(g.after)}</span><em class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${delta > 0 ? '↑' : delta < 0 ? '再聽聽' : '—'}</em></li>`;
+  }).join('');
   return `<main class="page result">
     ${topbar(`${cur.quest.emoji} 完成`)}
     <section class="morning"><div class="sun">${cur.quest.emoji}</div><h2>${esc(cur.quest.title)}</h2><p>${esc(cur.endNarr)}</p></section>
-    <h3 class="section-title">這次練到的句子</h3>
+    <h3 class="section-title">🗣️ 這次說出口的句子</h3>
     <ul class="book">${rows}</ul>
+    ${listenRows ? `<h3 class="section-title">👂 這次聽力測驗的句子</h3><ul class="book">${listenRows}</ul>` : ''}
     <p class="fine">★ 越多，下次出現時字幕和提示就越少。</p>
     <div class="actions"><button class="btn primary" data-act="toPlan">回到今天的行程</button></div>
   </main>`;
@@ -247,14 +272,18 @@ function viewResult() {
 function viewFinal() {
   const ids = Object.keys(save.mastery);
   const strong = ids.filter(id => mastery(id) >= 2).length;
+  const heardStrong = Object.keys(save.heard).filter(id => listenLevel(id) >= 1).length;
   const skills = SKILLS.map(s => {
-    const pct = Math.round(s.phrases.reduce((a, id) => a + Math.min(mastery(id), 3), 0) / (s.phrases.length * 3) * 100);
+    const ids = s.listen || s.phrases;
+    const level = s.listen ? listenLevel : mastery;
+    const pct = Math.round(ids.reduce((a, id) => a + Math.min(level(id), 3), 0) / (ids.length * 3) * 100);
     return `<li><span>${s.name}</span><div class="bar"><i style="width:${pct}%"></i></div><b>${pct}%</b></li>`;
   }).join('');
   return `<main class="page final">
     ${topbar('旅程結束')}
     <section class="morning"><div class="sun">✈️</div><h2>回台灣的飛機上</h2>
-      <p>這趟旅程你學了 <b>${ids.length}</b> 個句子，其中 <b>${strong}</b> 個已經不看字幕也說得出來。</p></section>
+      <p>這趟旅程你學了 <b>${ids.length}</b> 個句子，其中 <b>${strong}</b> 個已經不看字幕也說得出來；
+      聽過 <b>${Object.keys(save.heard).length}</b> 句店員和路人的話，有 <b>${heardStrong}</b> 句不看字幕也聽得懂。</p></section>
     <h3 class="section-title">你的旅遊日文能力</h3>
     <ul class="skills">${skills}</ul>
     <p class="fine">原型到這裡結束。正式版可以加入更多城市、角色，以及英文等其他語言。</p>
@@ -273,11 +302,15 @@ function viewBook() {
       <div><b>${esc(p.ja)}</b><small>${esc(p.romaji)}・${esc(p.zh)}</small></div>
       <span class="stars">${stars(mastery(id))}</span></li>`;
   }).join('');
+  const heard = Object.entries(save.heard).map(([id, h]) => `<li><button class="chip" data-act="sayHeard" data-id="${id}">🔊</button>
+      <div><b>${esc(h.ja)}</b><small>${esc(h.zh)}</small></div>
+      <span class="stars">${stars(listenLevel(id))}</span></li>`).join('');
   return `<div class="overlay" data-act="closeBook">
     <div class="sheet" data-act="noop">
       <header><h3>📖 句子本</h3><button class="icon" data-act="closeBook">✕</button></header>
-      ${ids.length ? `<ul class="book">${rows}</ul>` : '<p class="empty">還沒學到句子，先去完成一個行程吧！</p>'}
-      <p class="fine">★ 越多，字幕和提示就越少；★★ 以上的句子會進入「直接開口」模式。</p>
+      ${ids.length ? `<h4>🗣️ 我會說的</h4><ul class="book">${rows}</ul>` : '<p class="empty">還沒學到句子，先去完成一個行程吧！</p>'}
+      ${heard ? `<h4>👂 我聽過的（店員、路人說的話）</h4><ul class="book">${heard}</ul>` : ''}
+      <p class="fine">🗣️ ★ 越多，字幕和提示就越少；★★ 以上的句子會進入「直接開口」模式。<br>👂 ★★ 以上，對方會用接近真實的速度說話。</p>
     </div>
   </div>`;
 }
@@ -295,7 +328,7 @@ function render() {
 // ---------- 劇情流程 ----------
 
 function startQuest(id) {
-  cur = { quest: QUESTS.find(q => q.id === id), gains: {}, lastSpeaker: null };
+  cur = { quest: QUESTS.find(q => q.id === id), gains: {}, listenGains: {}, lastSpeaker: null };
   screen = 'scene';
   goto(cur.quest.start);
 }
@@ -307,11 +340,20 @@ function goto(id) {
   cur.node = node;
   cur.turn = null;
   cur.subRevealed = false;
+  cur.quiz = null;
   if (node.end) return finishQuest(node);
   if (node.npc) {
-    const { concept, who } = node.npc;
+    const npc = node.npc;
+    const { concept, who } = npc;
     cur.subShown = save.settings.alwaysSub || (save.exposure[concept] || 0) < 1;
+    // 聽過的台詞（或價錢、路線這類一定要聽懂的）先考聽力，答完才顯示字幕
+    if (!save.settings.alwaysSub) {
+      if (npc.quiz) cur.quiz = makeQuiz(npc.quiz.q, npc.quiz.options, npc.quiz.answer);
+      else if (!cur.subShown) cur.quiz = makeQuiz('對方剛剛說的是？', [npc.zh, ...distractors(npc)], 0);
+    }
     save.exposure[concept] = (save.exposure[concept] || 0) + 1;
+    save.heard[concept] = { ja: npc.ja, zh: npc.zh };
+    save.listen[concept] ??= 0;
     cur.lastSpeaker = cur.quest.cast[who];
     persist();
   }
@@ -329,10 +371,36 @@ function startTurn(choices) {
   };
 }
 
+function makeQuiz(q, options, answer) {
+  return { q, options: shuffle(options.map((text, i) => ({ text, correct: i === answer }))), picked: null, correct: false };
+}
+
+function distractors(npc) {
+  if (npc.alt?.length >= 2) return npc.alt.slice(0, 2);
+  const pool = new Set(QUESTS.flatMap(q => Object.values(q.nodes))
+    .filter(n => n.npc && n.npc.concept !== npc.concept).map(n => n.npc.zh));
+  return shuffle([...pool]).slice(0, 2);
+}
+
+function pickQuiz(i) {
+  const quiz = cur.quiz;
+  const concept = cur.node.npc.concept;
+  quiz.picked = i;
+  quiz.correct = i >= 0 && quiz.options[i].correct;
+  const before = listenLevel(concept);
+  const after = quiz.correct ? Math.min(MAX_MASTERY, before + 1) : Math.max(0, before - 1);
+  save.listen[concept] = after;
+  cur.listenGains[concept] = { before: cur.listenGains[concept]?.before ?? before, after };
+  persist();
+  render();
+}
+
+// 聽力越熟練，NPC 講話越接近真實速度
 function sayNpc(slow = false) {
   const npc = cur.node.npc;
   if (!npc) return;
-  speak(npc.ja, { rate: slow || npc.slow ? 0.65 : 0.95, pitch: cur.quest.cast[npc.who].pitch });
+  const rate = slow || npc.slow ? 0.65 : listenLevel(npc.concept) >= 2 ? 1.1 : 0.92;
+  speak(npc.ja, { rate, pitch: cur.quest.cast[npc.who].pitch });
 }
 
 function finishQuest(node) {
@@ -459,14 +527,28 @@ const actions = {
   },
   replayDay2() { save.day = MAX_DAY; save.finished = false; persist(); screen = 'plan'; render(); },
   toggleQuiet() { save.settings.quiet = !save.settings.quiet; persist(); render(); },
-  toggleSub() { save.settings.alwaysSub = !save.settings.alwaysSub; if (cur) cur.subRevealed = save.settings.alwaysSub; persist(); render(); },
+  toggleSub() {
+    save.settings.alwaysSub = !save.settings.alwaysSub;
+    if (cur) {
+      cur.subRevealed = save.settings.alwaysSub;
+      if (save.settings.alwaysSub && cur.quiz?.picked === null) cur.quiz = null;
+    }
+    persist();
+    render();
+  },
   book() { bookOpen = true; render(); },
   closeBook() { bookOpen = false; render(); },
   sayId({ id }) { speak(PHRASES[id].ja, { rate: 0.85 }); },
   next() { goto(cur.node.next); },
   replay() { sayNpc(); },
   replaySlow() { sayNpc(true); },
-  reveal() { cur.subRevealed = true; render(); },
+  reveal() {
+    if (cur.quiz?.picked === null) return pickQuiz(-1);
+    cur.subRevealed = true;
+    render();
+  },
+  quizPick({ i }) { pickQuiz(Number(i)); },
+  sayHeard({ id }) { speak(save.heard[id].ja, { rate: 0.9 }); },
   choose({ i }) {
     const t = cur.turn;
     t.chosen = Number(i);
