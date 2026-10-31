@@ -46,21 +46,43 @@ export const PHRASES = {
   mata_kimasu:   { ja: 'はい、また来ます', kana: 'はい、またきます', romaji: 'hai, mata kimasu', zh: '會，我會再來', req: [['また', '又'], ['きます', '来ます', 'くる', '来る', 'きたい', '来たい']] },
   aitai:         { ja: 'また会いたいです', kana: 'またあいたいです', romaji: 'mata aitai desu', zh: '我想再見到你', req: [['あいたい', '会いたい', '逢いたい']] },
   motteinai:     { ja: '持っていないです', kana: 'もっていないです', romaji: 'motte inai desu', zh: '沒有', req: [['ない', 'ありません', 'いいえ', 'だいじょうぶ', '大丈夫']] },
+  megusuri:      { ja: '目薬を探しています', kana: 'めぐすりをさがしています', romaji: 'megusuri o sagashite imasu', zh: '我在找眼藥水', req: [['めぐすり', '目薬']], full: [['さがして', '探して']] },
+  hiyakedome:    { ja: '日焼け止めを探しています', kana: 'ひやけどめをさがしています', romaji: 'hiyakedome o sagashite imasu', zh: '我在找防曬乳', req: [['ひやけどめ', '日焼け止め', '日焼止め']], full: [['さがして', '探して']] },
+  menzei:        { ja: '免税できますか', kana: 'めんぜいできますか', romaji: 'menzei dekimasu ka', zh: '可以免稅嗎？', req: [['めんぜい', '免税']], full: [['できます', '出来ます', 'できる', '出来る']] },
+  hai_douzo:     { ja: 'はい、どうぞ', kana: 'はい、どうぞ', romaji: 'hai, douzo', zh: '好的，給你', req: [['どうぞ']] },
+  nama:          { ja: '生ビールをください', kana: 'なまびーるをください', romaji: 'nama biiru o kudasai', zh: '請給我生啤酒', req: [['ビール', 'びーる']], full: [KUDASAI] },
+  uuroncha:      { ja: 'ウーロン茶をください', kana: 'うーろんちゃをください', romaji: 'uuroncha o kudasai', zh: '請給我烏龍茶', req: [['ウーロン', '烏龍']], full: [KUDASAI] },
+  osusume:       { ja: 'おすすめは何ですか', kana: 'おすすめはなんですか', romaji: 'osusume wa nan desu ka', zh: '推薦什麼？', req: [['おすすめ', 'お勧め', 'お薦め', 'お奨め']], full: [['なん', '何']] },
+  sore_kudasai:  { ja: 'じゃあ、それをください', kana: 'じゃあ、それをください', romaji: 'jaa, sore o kudasai', zh: '那就給我那個', req: [['それ', 'やきとり', '焼き鳥', '焼鳥']], full: [KUDASAI] },
+  taiwan_kara:   { ja: '台湾から来ました', kana: 'たいわんからきました', romaji: 'taiwan kara kimashita', zh: '我從台灣來', req: [['たいわん', '台湾']], full: [['から'], ['きました', '来ました', 'きた', '来た']] },
+  kanpai:        { ja: '乾杯！', kana: 'かんぱい！', romaji: 'kanpai!', zh: '乾杯！', req: [['かんぱい', '乾杯']] },
 };
 
 // 遇到聽不懂時，在任何對話都能說的「萬用求救句」
 export const META_REPEAT = 'mou_ichido';
 
-// 遊戲結尾的「旅遊能力」分類
-export const SKILLS = [
-  { name: '🛍️ 購物結帳', phrases: ['kore_kudasai', 'ikura', 'fukuro_iranai', 'card', 'genkin'] },
-  { name: '🗺️ 問路求助', phrases: ['sumimasen', 'eki_doko', 'mou_ichido', 'wakarimashita'] },
-  { name: '🍜 餐廳點餐', phrases: ['hitori', 'ramen', 'omizu', 'okaikei', 'gochisousama'] },
-  { name: '💬 跟人聊天', phrases: ['taiwan', 'oishii', 'konbanwa', 'ikitai'] },
-  { name: '👂 聽懂店員', listen: ['irasshaimase', 'atatame', 'fukuro', 'shiharai', 'point', 'chuumon', 'tennai', 'michi_annai', 'nanahyaku', 'gohyakuen', 'ninki'] },
+// 養成數值（0～100）：開口說對、聽懂店員才會上升
+export const STATS = {
+  shop:   { name: '購物', emoji: '🛍️' },
+  road:   { name: '問路', emoji: '🗺️' },
+  food:   { name: '點餐', emoji: '🍜' },
+  chat:   { name: '聊天', emoji: '💬' },
+  listen: { name: '聽力', emoji: '👂' },
+};
+
+// 一天的三個時段
+export const TIMES = [
+  { key: 'am', name: '上午', emoji: '🌅' },
+  { key: 'pm', name: '下午', emoji: '☀️' },
+  { key: 'night', name: '晚上', emoji: '🌙' },
 ];
 
-// QUESTS：每一天早上可選的支線
+export const TRIP = { days: 3, money: 20000, stamina: 100, rest: 40 };
+
+// QUESTS：可以排進行程的地點
+//   times    開放的時段；cost 花費（日圓，結束時扣，end 節點可用 cost 覆蓋）；stamina 消耗體力
+//   skill    說出口的句子算進哪個數值（cast 角色或 choice 也可以各自指定 skill）
+//   requires 需要的旗標；nextDay 旗標要等到隔天才生效；once 整趟旅程只能去一次
 // 節點：
 //   narr     旁白（中文）
 //   npc      NPC 台詞 { who, ja, kana, zh, concept, keys, alt, quiz }
@@ -68,12 +90,13 @@ export const SKILLS = [
 //            keys  聽力關鍵詞 [['日文', '中文']]，顯示字幕時一起教
 //            alt   聽力題的干擾選項（容易搞混的意思）；沒寫就從其他台詞隨機挑
 //            quiz  一定要先聽懂才顯示字幕的題目 { q, options, answer }（例如價錢、路線）
-//   choices  玩家回合 [{ zh, phrase, next, hint, flag }]
+//   choices  玩家回合 [{ zh, phrase, next, hint, flag, need, money, skill }]
+//            need  數值不夠時鎖住這個選項，例如 { shop: 20 }；money 選了之後的金額變化
 //   next     沒有玩家回合時，按「繼續」前往的節點
 //   end      支線結束
 export const QUESTS = [
   {
-    id: 'konbini', day: 1, emoji: '🏪', title: '便利商店買早餐',
+    id: 'konbini', times: ['am', 'pm', 'night'], cost: 780, stamina: 15, skill: 'shop', emoji: '🏪', title: '便利商店買早餐',
     desc: '肚子餓了，去飯店樓下的便利商店買飯糰和便當。',
     bg: 'linear-gradient(160deg,#e3f6e8,#a9dfc0)',
     cast: { clerk: { name: '店員', emoji: '🧑‍💼', pitch: 1.1 } },
@@ -113,7 +136,7 @@ export const QUESTS = [
     },
   },
   {
-    id: 'michi', day: 1, emoji: '🚉', title: '問路去車站',
+    id: 'michi', times: ['am', 'pm'], cost: 0, stamina: 25, skill: 'road', emoji: '🚉', title: '問路去車站',
     desc: '想去淺草，Google Maps 卻突然沒網路……路邊有位阿姨看起來很親切。',
     bg: 'linear-gradient(160deg,#e2efff,#b3cff3)',
     cast: { obasan: { name: '路過的阿姨', emoji: '👵', pitch: 1.25 } },
@@ -136,13 +159,13 @@ export const QUESTS = [
     },
   },
   {
-    id: 'ramen', day: 1, emoji: '🍜', title: '巷子裡的拉麵店',
+    id: 'ramen', times: ['night'], cost: 1100, stamina: 25, skill: 'food', emoji: '🍜', title: '巷子裡的拉麵店',
     desc: '聽說附近有一家只有當地人才知道的拉麵店。晚餐就決定是它了。',
     bg: 'linear-gradient(160deg,#4a2e28,#9a4b32)',
     dark: true,
     cast: {
       master: { name: '老闆', emoji: '👨‍🍳', pitch: 0.8 },
-      yui: { name: '結衣', emoji: '👩', pitch: 1.3 },
+      yui: { name: '結衣', emoji: '👩', pitch: 1.3, skill: 'chat' },
     },
     start: 's',
     nodes: {
@@ -179,8 +202,8 @@ export const QUESTS = [
     },
   },
   {
-    id: 'cafe', day: 2, emoji: '☕', title: '咖啡廳的早晨',
-    desc: '找間咖啡廳吃早餐，順便規劃今天的行程。',
+    id: 'cafe', times: ['am', 'pm'], cost: 550, stamina: 15, skill: 'food', emoji: '☕', title: '咖啡廳的早晨',
+    desc: '找間咖啡廳坐一下，順便規劃接下來的行程。',
     bg: 'linear-gradient(160deg,#f6e8d6,#ddb98f)',
     cast: { staff: { name: '店員', emoji: '👩‍💼', pitch: 1.15 } },
     start: 'n1',
@@ -211,8 +234,8 @@ export const QUESTS = [
     },
   },
   {
-    id: 'omiyage', day: 2, emoji: '🎁', title: '挑伴手禮',
-    desc: '要回台灣了，幫同事和家人買點伴手禮吧。',
+    id: 'omiyage', times: ['pm'], cost: 1200, stamina: 20, skill: 'shop', emoji: '🎁', title: '挑伴手禮',
+    desc: '幫同事和家人買點伴手禮吧。',
     bg: 'linear-gradient(160deg,#fde6ea,#f0b3c1)',
     cast: { staff: { name: '店員', emoji: '🧑', pitch: 1.0 } },
     start: 's',
@@ -244,19 +267,19 @@ export const QUESTS = [
                    keys: [['ありがとうございました', '謝謝光臨（結帳後店員說的）']], alt: ['歡迎光臨！', '請稍等一下。'] },
             choices: [{ zh: '謝謝', phrase: 'arigatou', next: 'end' }] },
       end: { end: true, narr: '伴手禮買好了！同事一定會很開心。' },
-      end_no: { end: true, narr: '你笑著點頭離開。會婉拒，也是很重要的能力！' },
+      end_no: { end: true, cost: 0, narr: '你笑著點頭離開。會婉拒，也是很重要的能力！' },
     },
   },
   {
-    id: 'matsuri', day: 2, emoji: '🏮', title: '和結衣逛祭典',
-    desc: '晚上七點，神社前。昨天在拉麵店認識的結衣，真的會來嗎？',
-    lockedDesc: '好像錯過了什麼邀請……（去「巷子裡的拉麵店」看看）',
+    id: 'matsuri', times: ['night'], cost: 1000, stamina: 30, skill: 'chat', once: true, nextDay: true, emoji: '🏮', title: '和結衣逛祭典',
+    desc: '晚上七點，神社前。在拉麵店認識的結衣，真的會來嗎？',
+    lockedDesc: '好像錯過了什麼邀請……（晚上去「巷子裡的拉麵店」看看）',
     requires: 'yui_yes',
     bg: 'linear-gradient(160deg,#232646,#5b2d63)',
     dark: true,
     cast: {
       yui: { name: '結衣', emoji: '👘', pitch: 1.3 },
-      oji: { name: '攤販大叔', emoji: '👨', pitch: 0.8 },
+      oji: { name: '攤販大叔', emoji: '👨', pitch: 0.8, skill: 'food' },
     },
     start: 's',
     nodes: {
@@ -284,4 +307,130 @@ export const QUESTS = [
       end: { end: true, narr: '煙火在夜空中綻放。你發現，自己已經能用日文跟人聊天了。' },
     },
   },
+  {
+    id: 'drugstore', times: ['pm'], cost: 5500, stamina: 25, skill: 'shop', emoji: '💊', title: '藥妝店大採購',
+    desc: '想買眼藥水和防曬乳，可是架上的商品多到看不懂。',
+    bg: 'linear-gradient(160deg,#e9f4ff,#bfe0f5)',
+    cast: { staff: { name: '店員', emoji: '👩‍⚕️', pitch: 1.15 } },
+    start: 's',
+    nodes: {
+      s:  { narr: '架上全是看不懂的包裝，問問店員吧。', choices: [{ zh: '不好意思（叫住店員）', phrase: 'sumimasen', hint: '叫住別人的萬用句', next: 'n2' }] },
+      n2: { npc: { who: 'staff', ja: 'はい、何かお探しですか？', kana: 'はい、なにかおさがしですか？', zh: '是，在找什麼嗎？', concept: 'osagashi',
+                   keys: [['何か', '什麼'], ['お探しですか', '在找嗎']], alt: ['需要袋子嗎？', '請問要怎麼付款？'] },
+            choices: [
+              { zh: '我在找眼藥水', phrase: 'megusuri', hint: '商品名稱＋「を探しています」', next: 'n3' },
+              { zh: '我在找防曬乳', phrase: 'hiyakedome', hint: '商品名稱＋「を探しています」', next: 'n3' }] },
+      n3: { npc: { who: 'staff', ja: 'それでしたら、こちらにございます。', kana: 'それでしたら、こちらにございます。', zh: '那個的話，在這邊。', concept: 'gozaimasu',
+                   keys: [['こちら', '這邊'], ['ございます', '有／在（很客氣的說法）']], alt: ['那個已經賣完了。', '請稍等一下。'] }, next: 'n4' },
+      n4: { narr: '你又順手拿了面膜和零食，走到收銀台。', next: 'n5' },
+      n5: { npc: { who: 'staff', ja: '全部で五千五百円です。', kana: 'ぜんぶでごせんごひゃくえんです。', zh: '全部一共五千五百日圓。', concept: 'gosen',
+                   keys: [['全部で', '全部一共'], ['五千五百円', '5500 日圓']],
+                   quiz: { q: '一共多少錢？', options: ['5500 日圓', '5050 日圓', '550 日圓'], answer: 0 } },
+            choices: [
+              { zh: '可以免稅嗎？', phrase: 'menzei', need: { shop: 20 }, hint: '「免稅」＋「可以嗎」', next: 'n6' },
+              { zh: '刷卡', phrase: 'card', hint: '「卡」的日文就是英文 card', next: 'n8' }] },
+      n6: { npc: { who: 'staff', ja: '免税ですね。パスポートをお願いします。', kana: 'めんぜいですね。ぱすぽーとをおねがいします。', zh: '免稅對吧。請給我護照。', concept: 'passport',
+                   keys: [['パスポート', '護照']], alt: ['請出示集點卡。', '請在這裡簽名。'] },
+            choices: [{ zh: '（遞出護照）好的，給你', phrase: 'hai_douzo', hint: '「是」＋「請（拿去）」', money: 500, next: 'n7' }] },
+      n7: { npc: { who: 'staff', ja: '免税で、五千円になります。', kana: 'めんぜいで、ごせんえんになります。', zh: '免稅後是五千日圓。', concept: 'menzei_price',
+                   keys: [['免税で', '免稅後'], ['五千円', '5000 日圓']],
+                   quiz: { q: '免稅後多少錢？', options: ['5000 日圓', '5500 日圓', '4500 日圓'], answer: 0 } },
+            choices: [{ zh: '刷卡', phrase: 'card', hint: '「卡」的日文就是英文 card', next: 'n8' }] },
+      n8: { npc: { who: 'staff', ja: 'ありがとうございました！', kana: 'ありがとうございました', zh: '謝謝光臨！', concept: 'arigatou_shop',
+                   keys: [['ありがとうございました', '謝謝光臨（結帳後店員說的）']], alt: ['歡迎光臨！', '請稍等一下。'] },
+            choices: [{ zh: '謝謝', phrase: 'arigatou', next: 'end' }] },
+      end: { end: true, narr: '提著一大袋戰利品走出藥妝店。購物越熟練，越能發現省錢的小技巧。' },
+    },
+  },
+  {
+    id: 'izakaya', times: ['night'], cost: 3000, stamina: 30, skill: 'food', emoji: '🏮', title: '熱鬧的居酒屋',
+    desc: '紅燈籠下的小居酒屋，聽說常有當地上班族來喝一杯。',
+    bg: 'linear-gradient(160deg,#3b1f1a,#a3402c)',
+    dark: true,
+    cast: {
+      staff: { name: '店員', emoji: '🧑‍🍳', pitch: 1.05 },
+      oji: { name: '隔壁的大叔', emoji: '🧔', pitch: 0.8, skill: 'chat' },
+    },
+    start: 's',
+    nodes: {
+      s:  { narr: '拉開店門，店裡很熱鬧。', next: 'n1' },
+      n1: { npc: { who: 'staff', ja: 'いらっしゃいませ！ 何名様ですか？', kana: 'いらっしゃいませ！ なんめいさまですか？', zh: '歡迎光臨！請問幾位？', concept: 'nanmei',
+                   keys: [['何名様', '幾位客人']], alt: ['要點什麼？', '要內用嗎？'] },
+            choices: [{ zh: '一個人', phrase: 'hitori', hint: '「一個人」＋「です」', next: 'n2' }] },
+      n2: { npc: { who: 'staff', ja: 'お飲み物は何になさいますか？', kana: 'おのみものはなにになさいますか？', zh: '飲料要點什麼呢？', concept: 'onomimono',
+                   keys: [['お飲み物', '飲料'], ['何になさいますか', '要點什麼（敬語）']], alt: ['請問幾位？', '要結帳了嗎？'] },
+            choices: [
+              { zh: '生啤酒', phrase: 'nama', hint: '飲料名稱＋「をください」', next: 'n3' },
+              { zh: '烏龍茶', phrase: 'uuroncha', hint: '飲料名稱＋「をください」', next: 'n3' }] },
+      n3: { narr: '菜單上全是漢字，看不太懂。', choices: [{ zh: '請問推薦什麼？', phrase: 'osusume', hint: '「推薦」＋「是什麼」', next: 'n4' }] },
+      n4: { npc: { who: 'staff', ja: '今日は焼き鳥がおすすめです。', kana: 'きょうはやきとりがおすすめです。', zh: '今天推薦烤雞肉串。', concept: 'kyou_osusume',
+                   keys: [['今日は', '今天'], ['焼き鳥', '烤雞肉串'], ['おすすめ', '推薦']],
+                   quiz: { q: '店員推薦什麼？', options: ['烤雞肉串', '生魚片', '炸雞'], answer: 0 } },
+            choices: [{ zh: '那就給我那個', phrase: 'sore_kudasai', hint: '「那個」＋「請給我」', next: 'n5' }] },
+      n5: { narr: '隔壁的大叔笑著舉起酒杯。', next: 'n6' },
+      n6: { npc: { who: 'oji', ja: 'ねえ、どこから来たの？', kana: 'ねえ、どこからきたの？', zh: '欸，你從哪裡來的？', concept: 'dokokara',
+                   keys: [['どこから', '從哪裡'], ['来たの', '來的（口語）']], alt: ['你住在哪裡？', '你一個人嗎？'] },
+            choices: [{ zh: '我從台灣來', phrase: 'taiwan_kara', hint: '「台灣」＋「從」＋「來了」', next: 'n7' }] },
+      n7: { npc: { who: 'oji', ja: 'おお、台湾か！ 乾杯しよう！', kana: 'おお、たいわんか！ かんぱいしよう！', zh: '喔，台灣啊！來乾杯吧！', concept: 'kanpai_invite',
+                   keys: [['乾杯しよう', '來乾杯吧']], alt: ['台灣很熱吧！', '下次再見！'] },
+            choices: [{ zh: '乾杯！', phrase: 'kanpai', hint: '中文也這樣說', next: 'n8' }] },
+      n8: { narr: '聊著聊著，時間不早了。', choices: [{ zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n9' }] },
+      n9: { npc: { who: 'staff', ja: '三千円になります。', kana: 'さんぜんえんになります。', zh: '這樣是三千日圓。', concept: 'sanzen',
+                   keys: [['三千円', '3000 日圓']],
+                   quiz: { q: '多少錢？', options: ['3000 日圓', '300 日圓', '3300 日圓'], answer: 0 } },
+            choices: [{ zh: '謝謝招待', phrase: 'gochisousama', hint: '吃完飯一定要說的一句', next: 'end' }] },
+      end: { end: true, narr: '走出居酒屋，已經很晚了……末班車還有嗎？' },
+    },
+  },
+];
+
+// EVENTS：在早上出門前、或晚上回旅館時觸發，結果看數值
+//   at      'morning'（新的一天開始）或 'night'（這一天結束）
+//   day     哪一天（不寫代表每天都可能）；after 今天去過哪個地點；requires 需要的旗標或去過的地點
+//   need    數值門檻，全部達到算成功
+//   success / fail  { text, money, stamina, flag, stats }
+export const EVENTS = [
+  {
+    id: 'delay', at: 'morning', day: 2, emoji: '🚃', title: '電車誤點',
+    story: '早上在車站，廣播一直重複同一段話，大家開始往另一個月台走……',
+    ja: 'ただいま、電車が遅れております。', zh: '目前電車延誤中。', keys: [['遅れております', '延誤中']],
+    need: { listen: 10 },
+    success: { text: '你聽出「遅れております」是延誤的意思，跟著大家改搭別的線，沒有耽誤時間。', stats: { listen: 3 } },
+    fail: { text: '你聽不懂廣播，在月台傻等了 30 分鐘才發現電車延誤。好累……', stamina: -25 },
+  },
+  {
+    id: 'lasttrain', at: 'night', after: 'izakaya', emoji: '🌃', title: '末班車',
+    story: '從居酒屋出來已經快十二點。車站的廣播在說什麼？',
+    ja: 'まもなく、最終電車が発車します。', zh: '最後一班電車即將發車。', keys: [['最終電車', '末班車'], ['発車します', '要開了']],
+    need: { listen: 25, road: 15 },
+    success: { text: '你聽懂「最終電車」，問了站務員「〇〇駅はどこですか」，跑著趕上了末班車！', stats: { road: 3 } },
+    fail: { text: '等你搞懂廣播的意思，末班車已經開走了。只好搭計程車回旅館。', money: -6000 },
+  },
+  {
+    id: 'yui_line', at: 'morning', day: 3, requires: 'matsuri', emoji: '📱', title: '結衣傳來訊息',
+    story: '早上手機響了，是結衣傳來的 LINE。',
+    ja: '昨日は楽しかったね！ また連絡してね。', zh: '昨天好開心喔！要再跟我聯絡喔。', keys: [['楽しかった', '很開心'], ['連絡してね', '要聯絡喔']],
+    need: { chat: 25 },
+    success: { text: '你看懂了，回她「わたしも楽しかったです！」。你們約好下次你來日本時再見面。', flag: 'yui_friend', stats: { chat: 5 } },
+    fail: { text: '訊息看不太懂，你只回了一個貼圖。好像有點可惜……' },
+  },
+];
+
+// ENDINGS：最後一天結束時，由上往下找第一個符合的結局
+//   s 是存檔：s.stats、s.money、s.done（去過的地點）、s.flags
+export const ENDINGS = [
+  { id: 'perfect', emoji: '🌸', title: '完美旅程', text: '購物、問路、點餐、聊天、聽力樣樣都行。下次來日本，你已經不需要旅遊書了。',
+    when: s => Object.values(s.stats).every(v => v >= 25) },
+  { id: 'friend', emoji: '🎎', title: '交到日本朋友', text: '旅程最珍貴的不是景點，而是結衣。你們約好了，下次見面要用更流利的日文聊天。',
+    when: s => s.flags.yui_friend || (s.done.includes('matsuri') && s.stats.chat >= 30) },
+  { id: 'gourmet', emoji: '🍜', title: '美食達人', text: '拉麵、居酒屋、咖啡廳，你都能自在地點餐，還會問「おすすめは何ですか」。',
+    when: s => s.stats.food >= 40 },
+  { id: 'shopper', emoji: '🛍️', title: '購物達人', text: '你不只買得到想要的東西，還懂得免稅省錢，回國時錢包還有餘裕。',
+    when: s => s.stats.shop >= 40 && s.money >= 8000 },
+  { id: 'explorer', emoji: '🚃', title: '一個人走遍日本', text: '聽得懂廣播、問得到路，你已經可以一個人在日本自由移動了。',
+    when: s => s.stats.road >= 20 && s.stats.listen >= 35 },
+  { id: 'lost', emoji: '😵', title: '迷路大王', text: '這趟旅程你一次路都沒問過……但迷路也是旅行的一部分。下次記得說「すみません」！',
+    when: s => s.stats.road < 5 },
+  { id: 'normal', emoji: '✈️', title: '平凡又美好的旅程', text: '雖然還說得不太流利，但你用自己的日文，完成了第一次的日本旅行。',
+    when: () => true },
 ];

@@ -237,7 +237,51 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .bar i { display: block; height: 100%; background: var(--ok); border-radius: 999px; }
 .skills b { text-align: right; }
 
+/* ---------- 養成：狀態、事件、結局 ---------- */
+.status {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 16px; margin-bottom: 12px;
+}
+.res { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; }
+.res b { font-variant-numeric: tabular-nums; }
+.dots { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin: 10px 0; }
+.dots i { height: 6px; border-radius: 999px; background: var(--line); }
+.dots i:nth-child(3n) { margin-right: 6px; }
+.dots i.past { background: var(--muted); }
+.dots i.now { background: var(--accent); }
+.skills.compact { margin: 0; gap: 4px; font-size: 13px; }
+.skills.compact li { grid-template-columns: 5.5em 1fr 2.2em; }
+.skills.compact .bar { height: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tags span { font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; color: var(--muted); }
+.quest.locked { opacity: .55; }
+.later { margin-top: 20px; color: var(--muted); font-size: 14px; }
+.later summary { cursor: pointer; }
+.later ul { list-style: none; padding: 0; display: grid; gap: 4px; }
+.later small { margin-left: 8px; }
+.choice.locked { opacity: .55; font-weight: 400; }
+.choice small { display: block; font-size: 12px; color: var(--muted); }
+.gain { color: var(--ok); font-weight: 700; margin: -6px 0 12px; }
+.summary {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 16px; margin-top: 12px; display: grid; gap: 8px;
+}
+.gains { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+.gains b { color: var(--ok); }
+.check .need { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.need span { border-radius: 999px; padding: 2px 10px; font-size: 14px; font-weight: 700; }
+.need .pass { background: var(--ok-soft); color: var(--ok); }
+.need .miss { background: var(--warn-soft); color: var(--warn); }
+.check .btn { margin-top: 12px; }
+.ending h2 { font-size: 26px; }
+.ending .fine { margin: 0; }
+.endings { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.endings li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
+.endings li span { margin-right: 6px; }
+.endings .unseen { color: var(--muted); border-style: dashed; }
+
 @media (max-width: 420px) {
   .avatar { width: 88px; height: 88px; font-size: 50px; }
   .t-ja { font-size: 22px; }
 }
+.meanings span.locked { background: var(--line); color: var(--muted); }
