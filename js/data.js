@@ -56,6 +56,54 @@ export const PHRASES = {
   sore_kudasai:  { ja: 'じゃあ、それをください', kana: 'じゃあ、それをください', romaji: 'jaa, sore o kudasai', zh: '那就給我那個', req: [['それ', 'やきとり', '焼き鳥', '焼鳥']], full: [KUDASAI] },
   taiwan_kara:   { ja: '台湾から来ました', kana: 'たいわんからきました', romaji: 'taiwan kara kimashita', zh: '我從台灣來', req: [['たいわん', '台湾']], full: [['から'], ['きました', '来ました', 'きた', '来た']] },
   kanpai:        { ja: '乾杯！', kana: 'かんぱい！', romaji: 'kanpai!', zh: '乾杯！', req: [['かんぱい', '乾杯']] },
+  // 數值門檻選項用的進階句子
+  suica:         { ja: 'Suicaでお願いします', kana: 'すいかでおねがいします', romaji: 'suika de onegai shimasu', zh: '我用 Suica 付', req: [['スイカ', 'すいか', 'suica', '交通系']], full: [KUDASAI] },
+  mou_hitotsu:   { ja: 'じゃあ、もう一つください', kana: 'じゃあ、もうひとつください', romaji: 'jaa, mou hitotsu kudasai', zh: '那再給我一個', req: [['もうひとつ', 'もう一つ', 'もう1つ', 'もういっこ', 'もう一個', 'もう1個']], full: [KUDASAI] },
+  nanpun:        { ja: '歩いて何分ですか', kana: 'あるいてなんぷんですか', romaji: 'aruite nanpun desu ka', zh: '走路要幾分鐘？', req: [['なんぷん', '何分', 'どのくらい', 'どれくらい']], full: [['あるいて', '歩いて']] },
+  kaite:         { ja: 'ここに書いてもらえますか', kana: 'ここにかいてもらえますか', romaji: 'koko ni kaite moraemasu ka', zh: '可以幫我寫在這裡嗎？', req: [['かいて', '書いて']], full: [['もらえ', 'ください', '下さい', 'くれ', 'いただけ']] },
+  kaedama:       { ja: '替え玉お願いします', kana: 'かえだまおねがいします', romaji: 'kaedama onegai shimasu', zh: '麻煩加麵', req: [['かえだま', '替え玉', '替玉']], full: [KUDASAI] },
+  tanoshimi:     { ja: 'そうですか、楽しみです', kana: 'そうですか、たのしみです', romaji: 'sou desu ka, tanoshimi desu', zh: '這樣啊，好期待', req: [['たのしみ', '楽しみ']] },
+  yokukuru:      { ja: '結衣さんはよく来ますか', kana: 'ゆいさんはよくきますか', romaji: 'yui-san wa yoku kimasu ka', zh: '結衣常來這裡嗎？', req: [['よく'], ['きます', '来ます', 'くる', '来る']] },
+  yasui:         { ja: 'もう少し安いのはありますか', kana: 'もうすこしやすいのはありますか', romaji: 'mou sukoshi yasui no wa arimasu ka', zh: '有便宜一點的嗎？', req: [['やすい', '安い']], full: [['あります', 'ある']] },
+  shishoku:      { ja: '食べてみてもいいですか', kana: 'たべてみてもいいですか', romaji: 'tabete mite mo ii desu ka', zh: '可以吃吃看嗎？', req: [['たべて', '食べて', 'ししょく', '試食']], full: [['いい', 'よろしい', 'できます']] },
+  oshigoto:      { ja: 'お仕事は何ですか', kana: 'おしごとはなんですか', romaji: 'oshigoto wa nan desu ka', zh: '您是做什麼工作的？', req: [['しごと', '仕事']], full: [['なん', '何']] },
+  nihonshu:      { ja: '日本酒のおすすめはありますか', kana: 'にほんしゅのおすすめはありますか', romaji: 'nihonshu no osusume wa arimasu ka', zh: '有推薦的日本酒嗎？', req: [['にほんしゅ', '日本酒', 'じざけ', '地酒']], full: [['おすすめ', 'お勧め', 'お薦め']] },
+  hitotsuzutsu:  { ja: '一つずつください', kana: 'ひとつずつください', romaji: 'hitotsu zutsu kudasai', zh: '各來一個', req: [['ひとつずつ', '一つずつ', '1つずつ', 'ひとつづつ', '一つづつ']], full: [KUDASAI] },
+  yukata:        { ja: '浴衣、似合っていますね', kana: 'ゆかた、にあっていますね', romaji: 'yukata, niatte imasu ne', zh: '浴衣很適合妳呢', req: [['にあって', '似合って', 'にあう', '似合う']] },
+  kirei:         { ja: 'きれいですね', kana: 'きれいですね', romaji: 'kirei desu ne', zh: '好漂亮呢', req: [['きれい', '綺麗', '奇麗']] },
+  // 結衣的戀愛支線
+  hajimete:      { ja: 'はい、初めてです', kana: 'はい、はじめてです', romaji: 'hai, hajimete desu', zh: '是的，第一次來日本', req: [['はじめて', '初めて']] },
+  asobi:         { ja: 'うん、遊びに来た', kana: 'うん、あそびにきた', romaji: 'un, asobi ni kita', zh: '嗯，來玩的', req: [['あそび', '遊び']], full: [['きた', '来た', 'きました', '来ました']] },
+  iie:           { ja: 'いいえ', kana: 'いいえ', romaji: 'iie', zh: '不是', req: [['いいえ', 'ちがいます', '違います']] },
+  oishisou:      { ja: 'おいしそう', kana: 'おいしそう', romaji: 'oishisou', zh: '看起來很好吃', req: [['おいしそう', '美味しそう', 'うまそう']] },
+  ikimashou:     { ja: 'いいですね、一緒に行きましょう', kana: 'いいですね、いっしょにいきましょう', romaji: 'ii desu ne, issho ni ikimashou', zh: '好啊，一起去', req: [['いきましょう', '行きましょう']] },
+  iidesuyo:      { ja: 'いいですよ', kana: 'いいですよ', romaji: 'ii desu yo', zh: '可以啊', req: [['いいですよ', 'いいよ']] },
+  chotto:        { ja: '明日はちょっと……', kana: 'あしたはちょっと……', romaji: 'ashita wa chotto...', zh: '明天可能有點忙', req: [['ちょっと']] },
+  daisuki:       { ja: '大好きです', kana: 'だいすきです', romaji: 'daisuki desu', zh: '很喜歡', req: [['だいすき', '大好き']] },
+  maamaa:        { ja: 'まあまあです', kana: 'まあまあです', romaji: 'maamaa desu', zh: '還可以', req: [['まあまあ']] },
+  amari:         { ja: 'あまり好きじゃないです', kana: 'あまりすきじゃないです', romaji: 'amari suki ja nai desu', zh: '不太喜歡', req: [['あまり', 'あんまり']], full: [['すきじゃ', '好きじゃ', 'すきでは', '好きでは']] },
+  hontou_kirei:  { ja: '本当にきれいです', kana: 'ほんとうにきれいです', romaji: 'hontou ni kirei desu', zh: '真的很漂亮', req: [['ほんとう', '本当', 'ほんと']], full: [['きれい', '綺麗']] },
+  un_kirei:      { ja: 'うん、きれい', kana: 'うん、きれい', romaji: 'un, kirei', zh: '嗯，很漂亮', req: [['きれい', '綺麗']], neg: ['ほんとう', '本当', 'ほんと'] },
+  mata_kuru:     { ja: 'また来ます', kana: 'またきます', romaji: 'mata kimasu', zh: '會再來的', req: [['また'], ['きます', '来ます']] },
+  mata_kitai:    { ja: 'また来たいです', kana: 'またきたいです', romaji: 'mata kitai desu', zh: '希望能再來', req: [['また'], ['きたい', '来たい']] },
+  wakarimasen:   { ja: 'わかりません', kana: 'わかりません', romaji: 'wakarimasen', zh: '不知道', req: [['わかりません', '分かりません', 'わからない', '分からない']] },
+  watashimo:     { ja: '私もです', kana: 'わたしもです', romaji: 'watashi mo desu', zh: '我也是', req: [['わたしも', '私も', 'ぼくも', '僕も']] },
+  sasotte:       { ja: '誘ってくれてありがとう', kana: 'さそってくれてありがとう', romaji: 'sasotte kurete arigatou', zh: '謝謝妳約我', req: [['さそって', '誘って']], full: [['ありがと']] },
+  otsukare:      { ja: 'お疲れ様です', kana: 'おつかれさまです', romaji: 'otsukaresama desu', zh: '辛苦了', req: [['おつかれ', 'お疲れ']] },
+  taihen:        { ja: '仕事、大変ですか', kana: 'しごと、たいへんですか', romaji: 'shigoto, taihen desu ka', zh: '工作很累嗎？', req: [['たいへん', '大変']] },
+  soudesuka:     { ja: 'そうですか', kana: 'そうですか', romaji: 'sou desu ka', zh: '這樣啊', req: [['そうですか', 'そうなんですか', 'そっか', 'そうなんだ']] },
+  naruhodo:      { ja: 'なるほど', kana: 'なるほど', romaji: 'naruhodo', zh: '原來如此', req: [['なるほど']] },
+  tsugimo:       { ja: '次も一緒に行きましょう', kana: 'つぎもいっしょにいきましょう', romaji: 'tsugi mo issho ni ikimashou', zh: '下次也一起去吧', req: [['いっしょに', '一緒に']], full: [['いきましょう', '行きましょう', 'いこう', '行こう']] },
+  un:            { ja: 'うん', kana: 'うん', romaji: 'un', zh: '嗯', req: [['うん', 'ええ']] },
+  nigiyaka:      { ja: 'にぎやかです', kana: 'にぎやかです', romaji: 'nigiyaka desu', zh: '很熱鬧', req: [['にぎやか', '賑やか']] },
+  tabemono:      { ja: '食べ物がおいしいです', kana: 'たべものがおいしいです', romaji: 'tabemono ga oishii desu', zh: '食物很好吃', req: [['たべもの', '食べ物', 'ごはん', 'ご飯']], full: [['おいしい', '美味しい']] },
+  shashin:       { ja: '今度、写真を見せてください', kana: 'こんど、しゃしんをみせてください', romaji: 'kondo, shashin o misete kudasai', zh: '下次給我看妳拍的照片', req: [['しゃしん', '写真']], full: [['みせて', '見せて']] },
+  watashimo_suki:{ ja: '私も好きです', kana: 'わたしもすきです', romaji: 'watashi mo suki desu', zh: '我也喜歡拍照', req: [['わたしも', '私も', 'ぼくも', '僕も']], full: [['すき', '好き']] },
+  tanoshii:      { ja: '私もです。一緒にいると楽しいです', kana: 'わたしもです。いっしょにいるとたのしいです', romaji: 'watashi mo desu. issho ni iru to tanoshii desu', zh: '我也是，跟妳在一起很開心', req: [['たのしい', '楽しい']], full: [['いっしょ', '一緒']] },
+  kanarazu:      { ja: '必ずまた会いましょう', kana: 'かならずまたあいましょう', romaji: 'kanarazu mata aimashou', zh: '一定會再見面的', req: [['かならず', '必ず', 'きっと']] },
+  suki:          { ja: '結衣さん、好きです', kana: 'ゆいさん、すきです', romaji: 'yui-san, suki desu', zh: '結衣，我喜歡妳', req: [['すき', '好き']], neg: ['すきじゃ', '好きじゃ'] },
+  ramen_mata:    { ja: '次もまた一緒にラーメンを食べましょう', kana: 'つぎもまたいっしょにらーめんをたべましょう', romaji: 'tsugi mo mata issho ni raamen o tabemashou', zh: '下次再一起吃拉麵吧', req: [['ラーメン', '拉麺']], full: [['たべましょう', '食べましょう', 'いきましょう', '行きましょう']] },
+  kono_suujitsu: { ja: 'この数日、ありがとうございました', kana: 'このすうじつ、ありがとうございました', romaji: 'kono suujitsu, arigatou gozaimashita', zh: '謝謝妳這幾天的陪伴', req: [['ありがと']] },
 };
 
 // 遇到聽不懂時，在任何對話都能說的「萬用求救句」
@@ -77,12 +125,13 @@ export const TIMES = [
   { key: 'night', name: '晚上', emoji: '🌙' },
 ];
 
-export const TRIP = { days: 3, money: 20000, stamina: 100, rest: 40 };
+export const TRIP = { days: 5, lastDaySlots: 2, money: 30000, stamina: 100, rest: 40 };
 
 // QUESTS：可以排進行程的地點
 //   times    開放的時段；cost 花費（日圓，結束時扣，end 節點可用 cost 覆蓋）；stamina 消耗體力
 //   skill    說出口的句子算進哪個數值（cast 角色或 choice 也可以各自指定 skill）
-//   requires 需要的旗標；nextDay 旗標要等到隔天才生效；once 整趟旅程只能去一次
+//   requires 需要的旗標（去過某地點會自動留下 'quest:地點id'）；nextDay 旗標要等到隔天才生效；once 整趟旅程只能去一次
+//   hidden   解鎖之前不顯示；day 只有那一天能去；lockedDesc / waitDesc 鎖住時、已約好但還沒到時的說明
 // 節點：
 //   narr     旁白（中文）
 //   npc      NPC 台詞 { who, ja, kana, zh, concept, keys, alt, quiz }
@@ -91,8 +140,11 @@ export const TRIP = { days: 3, money: 20000, stamina: 100, rest: 40 };
 //            alt   聽力題的干擾選項（容易搞混的意思）；沒寫就從其他台詞隨機挑
 //            quiz  一定要先聽懂才顯示字幕的題目 { q, options, answer }（例如價錢、路線）
 //   choices  玩家回合 [{ zh, phrase, next, hint, flag, need, money, skill }]
-//            need  數值不夠時鎖住這個選項，例如 { shop: 20 }；money 選了之後的金額變化
+//            need  數值不夠時鎖住這個選項，例如 { shop: 20 }
+//            選了之後的效果：money 金額（正數是省下）、stamina 體力、affection 結衣的好感度
+//   need/else  節點本身也可以有門檻：數值不夠就改走 else（例如聽力不夠就聽不懂店員的話）
 //   next     沒有玩家回合時，按「繼續」前往的節點
+//   branch   依存檔狀態分歧 [{ when: s => 條件, next }]，最後一個不寫 when 當作預設
 //   end      支線結束
 export const QUESTS = [
   {
@@ -105,7 +157,15 @@ export const QUESTS = [
       s:  { narr: '你拿了一個飯糰和一個便當，走到櫃台。', next: 'n1' },
       n1: { npc: { who: 'clerk', ja: 'いらっしゃいませ！', kana: 'いらっしゃいませ', zh: '歡迎光臨！', concept: 'irasshaimase',
                    keys: [['いらっしゃいませ', '歡迎光臨（不用回答，點頭就好）']], alt: ['謝謝光臨！', '請稍等一下。'] },
-            choices: [{ zh: '（把商品放上櫃台）請給我這些', phrase: 'kore_kudasai', hint: '指著商品，說「這個」＋「請給我」', next: 'n2' }] },
+            choices: [{ zh: '（把商品放上櫃台）請給我這些', phrase: 'kore_kudasai', hint: '指著商品，說「這個」＋「請給我」', next: 'n1b' }] },
+      // 聽力夠才聽得懂的促銷；聽不懂就錯過
+      n1b: { need: { listen: 25 }, else: 'n1m',
+             npc: { who: 'clerk', ja: '今、おにぎりがもう一つで百円引きですよ。', kana: 'いま、おにぎりがもうひとつでひゃくえんびきですよ。', zh: '現在飯糰再買一個就折一百日圓喔。', concept: 'campaign',
+                    keys: [['もう一つで', '再買一個就'], ['百円引き', '折一百日圓']] },
+             choices: [
+               { zh: '那再給我一個', phrase: 'mou_hitotsu', hint: '「再一個」＋「請給我」', stamina: 10, next: 'n2' },
+               { zh: '不用了', phrase: 'daijoubu', next: 'n2' }] },
+      n1m: { narr: '店員笑著補了一句「……おにぎり……百円引き……」，你沒聽懂，點點頭就過去了。（👂 聽力 25 以上就聽得懂）', next: 'n2' },
       n2: { npc: { who: 'clerk', ja: 'お弁当、温めますか？', kana: 'おべんとう、あたためますか？', zh: '便當要幫你加熱嗎？', concept: 'atatame',
                    keys: [['お弁当', '便當'], ['温めますか', '要加熱嗎']], alt: ['需要袋子嗎？', '需要筷子嗎？'] },
             choices: [
@@ -125,7 +185,8 @@ export const QUESTS = [
                     keys: [['お支払い', '付款'], ['どうされますか', '要怎麼做']], alt: ['有集點卡嗎？', '要幫你加熱嗎？'] },
              choices: [
                { zh: '刷卡', phrase: 'card', hint: '「卡」的日文就是英文 card', next: 'n4c' },
-               { zh: '付現金', phrase: 'genkin', hint: '現金的音讀', next: 'n4c' }] },
+               { zh: '付現金', phrase: 'genkin', hint: '現金的音讀', next: 'n4c' },
+               { zh: '用 Suica 付', phrase: 'suica', need: { shop: 15 }, hint: 'Suica 唸作「スイカ」', stamina: 5, next: 'n4c' }] },
       n4c: { npc: { who: 'clerk', ja: '七百八十円になります。', kana: 'ななひゃくはちじゅうえんになります。', zh: '這樣是七百八十日圓。', concept: 'nanahyaku',
                     keys: [['七百', '700'], ['八十', '80'], ['円になります', '日圓（店員的禮貌說法）']],
                     quiz: { q: '一共多少錢？', options: ['780 日圓', '1780 日圓', '870 日圓'], answer: 0 } }, next: 'n5' },
@@ -150,7 +211,17 @@ export const QUESTS = [
                    quiz: { q: '阿姨說要怎麼走？', options: ['直走，第二個紅綠燈右轉', '直走，第一個紅綠燈左轉', '右轉之後一直直走'], answer: 0 } },
             choices: [
               { zh: '聽不太懂，請再說一次', phrase: 'mou_ichido', hint: '「再一次」＋「麻煩了」', next: 'n4' },
-              { zh: '我知道了', phrase: 'wakarimashita', hint: '「わかる」的過去式', next: 'n5' }] },
+              { zh: '我知道了', phrase: 'wakarimashita', hint: '「わかる」的過去式', next: 'n5' },
+              { zh: '走路要幾分鐘？', phrase: 'nanpun', need: { road: 15 }, hint: '「走路」＋「幾分鐘」＋「嗎」', stamina: 10, next: 'n3t' }] },
+      n3t: { npc: { who: 'obasan', ja: '歩いて十分くらいですよ。', kana: 'あるいてじゅっぷんくらいですよ。', zh: '走路大概十分鐘喔。', concept: 'juppun',
+                    keys: [['十分', '10 分鐘'], ['くらい', '大約']],
+                    quiz: { q: '走路大約要多久？', options: ['大約 10 分鐘', '大約 1 分鐘', '大約 30 分鐘'], answer: 0 } },
+             choices: [
+               { zh: '我知道了', phrase: 'wakarimashita', hint: '「わかる」的過去式', next: 'n5' },
+               { zh: '可以幫我寫在這裡嗎？（拿出筆記本）', phrase: 'kaite', need: { road: 25 }, hint: '「這裡」＋「寫」＋「可以幫我嗎」', flag: 'hand_map', next: 'n3m' }] },
+      n3m: { npc: { who: 'obasan', ja: 'いいですよ。はい、駅はここ。終電は十二時ごろだから、気をつけてね。', kana: 'いいですよ。はい、えきはここ。しゅうでんはじゅうにじごろだから、きをつけてね。', zh: '好啊。來，車站在這裡。末班車大概十二點，要小心喔。', concept: 'chizu',
+                    keys: [['駅はここ', '車站在這裡'], ['終電', '末班車'], ['十二時ごろ', '十二點左右']] },
+             choices: [{ zh: '謝謝您', phrase: 'arigatou', next: 'end' }] },
       n4: { npc: { who: 'obasan', ja: 'まっすぐ行って……二つ目の信号を……右です。', kana: 'まっすぐいって……ふたつめのしんごうを……みぎです。', zh: '直走……第二個紅綠燈……右轉。', concept: 'michi_annai_slow', slow: true },
             choices: [{ zh: '我知道了', phrase: 'wakarimashita', hint: '「わかる」的過去式', next: 'n5' }] },
       n5: { npc: { who: 'obasan', ja: '気をつけてね。', kana: 'きをつけてね。', zh: '路上小心喔。', concept: 'kiotsukete' },
@@ -182,18 +253,36 @@ export const QUESTS = [
                    keys: [['少々お待ち', '稍等一下']], alt: ['謝謝惠顧！', '要點什麼？'] }, next: 'n4' },
       n4: { narr: '隔壁座位的女生看你在研究菜單，笑著轉過來。', next: 'n5' },
       n5: { npc: { who: 'yui', ja: 'こんばんは。観光ですか？', kana: 'こんばんは。かんこうですか？', zh: '晚安。你是來觀光的嗎？', concept: 'kankou' },
-            choices: [{ zh: '是的，我從台灣來', phrase: 'taiwan', hint: '「台灣」＋「從」＋「來了」', next: 'n6' }] },
-      n6: { npc: { who: 'yui', ja: '台湾！ いいですね。わたし、結衣です。ここのラーメン、おいしいですよ。', kana: 'たいわん！ いいですね。わたし、ゆいです。ここのらーめん、おいしいですよ。', zh: '台灣！真好。我叫結衣。這家的拉麵很好吃喔。', concept: 'yui_intro' }, next: 'n7' },
+            choices: [
+              { zh: '是的，第一次來日本', phrase: 'hajimete', hint: '「是」＋「第一次」', affection: 1, next: 'n6' },
+              { zh: '嗯，來玩的', phrase: 'asobi', hint: '「玩」＋「に来た」', next: 'n6' },
+              { zh: '不是', phrase: 'iie', hint: '最簡單的否定', affection: -1, next: 'n6' }] },
+      n6: { npc: { who: 'yui', ja: 'わたし、結衣です。このラーメン、おいしいですよ。', kana: 'わたし、ゆいです。このらーめん、おいしいですよ。', zh: '我叫結衣。這家的拉麵很好吃喔。', concept: 'yui_intro',
+                   keys: [['結衣', '結衣（她的名字）'], ['おいしいですよ', '很好吃喔']] },
+            choices: [
+              { zh: '看起來很好吃', phrase: 'oishisou', hint: '「好吃」＋「看起來」', affection: 1, next: 'n7' },
+              { zh: '謝謝推薦', phrase: 'arigatou', hint: '最基本的謝謝', next: 'n7' },
+              { zh: '結衣常來這裡嗎？', phrase: 'yokukuru', need: { chat: 20 }, hint: '「結衣さん」＋「常常」＋「來嗎」', affection: 1, next: 'n6y' }] },
+      n6y: { npc: { who: 'yui', ja: 'はい、仕事の帰りによく来ます。ここのスープが好きなんです。', kana: 'はい、しごとのかえりによくきます。ここのすーぷがすきなんです。', zh: '對，下班回家常來。我很喜歡這裡的湯頭。', concept: 'yui_story',
+                    keys: [['仕事の帰り', '下班回家的路上'], ['スープ', '湯頭']] }, next: 'n7' },
       n7: { narr: '餐點上桌了。你吃了一口——', next: 'n8' },
       n8: { npc: { who: 'yui', ja: 'どうですか？', kana: 'どうですか？', zh: '怎麼樣？', concept: 'doudesuka' },
             choices: [{ zh: '很好吃！', phrase: 'oishii', hint: '結衣剛剛說過的那個詞', next: 'n9' }] },
-      n9: { npc: { who: 'yui', ja: 'よかった！ あ、明日の夜、近くでお祭りがあるんです。よかったら、一緒に行きませんか？', kana: 'よかった！ あ、あしたのよる、ちかくでおまつりがあるんです。よかったら、いっしょにいきませんか？', zh: '太好了！啊，明天晚上附近有祭典。方便的話，要不要一起去？', concept: 'matsuri_invite' },
+      n9: { npc: { who: 'yui', ja: 'よかった！ あ、明日の夜、神社のお祭りがあるんです。一緒に行きませんか？', kana: 'よかった！ あ、あしたのよる、じんじゃのおまつりがあるんです。いっしょにいきませんか？', zh: '太好了！啊，明天晚上有神社的祭典。要一起去嗎？', concept: 'matsuri_invite',
+                   keys: [['明日の夜', '明天晚上'], ['お祭り', '祭典'], ['一緒に行きませんか', '要不要一起去']] },
             choices: [
-              { zh: '我想去！', phrase: 'ikitai', hint: '「去」＋「想要」', next: 'n10', flag: 'yui_yes' },
-              { zh: '抱歉，沒辦法去', phrase: 'ikenai', hint: '「不好意思」＋「不能去」', next: 'n10b' }] },
-      n10: { npc: { who: 'yui', ja: 'やった！ じゃあ、明日の七時に、神社の前で。', kana: 'やった！ じゃあ、あしたのしちじに、じんじゃのまえで。', zh: '太好了！那明天七點，神社前面見。', concept: 'yakusoku' }, next: 'n11' },
+              { zh: '好啊，一起去', phrase: 'ikimashou', hint: '「好耶」＋「一起去吧」', flag: 'yui_yes', affection: 1, next: 'n10' },
+              { zh: '可以啊', phrase: 'iidesuyo', hint: '「可以喔」', flag: 'yui_yes', next: 'n10' },
+              { zh: '明天可能有點忙', phrase: 'chotto', hint: '日本人婉拒時常說「明天有點……」', affection: -1, next: 'n10b' }] },
+      n10: { npc: { who: 'yui', ja: 'やった！ じゃあ、明日の七時に、神社の前で。', kana: 'やった！ じゃあ、あしたのしちじに、じんじゃのまえで。', zh: '太好了！那明天七點，神社前面見。', concept: 'yakusoku',
+                    keys: [['七時', '七點'], ['神社の前で', '在神社前面']] }, next: 'n11' },
       n10b: { npc: { who: 'yui', ja: 'そっか、残念。じゃあ、またどこかで。', kana: 'そっか、ざんねん。じゃあ、またどこかで。', zh: '這樣啊，好可惜。那有緣再見囉。', concept: 'zannen' }, next: 'n11' },
-      n11: { narr: '吃飽了，該結帳了。', choices: [{ zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n12' }] },
+      n11: { narr: '碗快見底了。', choices: [
+               { zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n12' },
+               { zh: '麻煩加麵', phrase: 'kaedama', need: { food: 25 }, hint: '加麵叫「替え玉」', stamina: 10, money: -150, next: 'n11k' }] },
+      n11k: { npc: { who: 'master', ja: 'はいよ、替え玉一丁！ いい食べっぷりだね。', kana: 'はいよ、かえだまいっちょう！ いいたべっぷりだね。', zh: '好嘞，加麵一份！吃得真豪爽。', concept: 'kaedama',
+                     keys: [['替え玉', '加麵'], ['いい食べっぷり', '吃得真豪爽']] }, next: 'n11b' },
+      n11b: { narr: '吃得好飽，該結帳了。', choices: [{ zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n12' }] },
       n12: { npc: { who: 'master', ja: '千百円です。まいど！', kana: 'せんひゃくえんです。まいど！', zh: '一千一百日圓。謝謝惠顧！', concept: 'senen',
                     keys: [['千百円', '1100 日圓'], ['まいど', '謝謝惠顧（關西口語）']],
                     quiz: { q: '老闆說多少錢？', options: ['1100 日圓', '1000 日圓', '700 日圓'], answer: 0 } },
@@ -211,8 +300,13 @@ export const QUESTS = [
       n1: { npc: { who: 'staff', ja: 'いらっしゃいませ。ご注文はお決まりですか？', kana: 'いらっしゃいませ。ごちゅうもんはおきまりですか？', zh: '歡迎光臨。決定好要點什麼了嗎？', concept: 'chuumon',
                    keys: [['ご注文', '點餐'], ['お決まりですか', '決定了嗎']], alt: ['請問幾位？', '要內用還是外帶？'] },
             choices: [
-              { zh: '咖啡', phrase: 'kohii', hint: '跟昨天點拉麵一樣的句型', next: 'n2' },
-              { zh: '抹茶拿鐵', phrase: 'matcha', hint: '跟昨天點拉麵一樣的句型', next: 'n2' }] },
+              { zh: '咖啡', phrase: 'kohii', hint: '跟點拉麵一樣的句型', next: 'n2' },
+              { zh: '抹茶拿鐵', phrase: 'matcha', hint: '跟點拉麵一樣的句型', next: 'n2' },
+              { zh: '推薦什麼？', phrase: 'osusume', need: { food: 15 }, hint: '「推薦」＋「是什麼」', next: 'n1r' }] },
+      n1r: { npc: { who: 'staff', ja: '今月限定の栗のケーキがおすすめです。', kana: 'こんげつげんていのくりのけーきがおすすめです。', zh: '推薦這個月限定的栗子蛋糕。', concept: 'gentei',
+                    keys: [['今月限定', '這個月限定'], ['栗のケーキ', '栗子蛋糕']],
+                    quiz: { q: '店員推薦什麼？', options: ['這個月限定的栗子蛋糕', '今天的咖啡', '抹茶拿鐵'], answer: 0 } },
+             choices: [{ zh: '那就給我那個', phrase: 'sore_kudasai', hint: '「那個」＋「請給我」', stamina: 10, next: 'n2' }] },
       n2: { npc: { who: 'staff', ja: '店内でお召し上がりですか？', kana: 'てんないでおめしあがりですか？', zh: '在店內用餐嗎？', concept: 'tennai',
                    keys: [['店内で', '在店裡'], ['お召し上がり', '享用（吃、喝的敬語）']], alt: ['決定好要點什麼了嗎？', '要加冰塊嗎？'] },
             choices: [
@@ -238,8 +332,15 @@ export const QUESTS = [
     desc: '幫同事和家人買點伴手禮吧。',
     bg: 'linear-gradient(160deg,#fde6ea,#f0b3c1)',
     cast: { staff: { name: '店員', emoji: '🧑', pitch: 1.0 } },
-    start: 's',
+    start: 'g',
     nodes: {
+      // 聽力夠才聽得懂「可以試吃」
+      g:  { need: { listen: 20 }, else: 'gm',
+            npc: { who: 'staff', ja: '抹茶のお菓子、試食できますよ。', kana: 'まっちゃのおかし、ししょくできますよ。', zh: '抹茶點心可以試吃喔。', concept: 'shishoku',
+                   keys: [['お菓子', '點心'], ['試食', '試吃'], ['できますよ', '可以喔']] },
+            choices: [{ zh: '可以吃吃看嗎？', phrase: 'shishoku', hint: '「吃」＋「試試看」＋「可以嗎」', stamina: 5, next: 'g2' }] },
+      g2: { narr: '抹茶的香味在嘴裡散開，好好吃！就決定買這個了。', choices: [{ zh: '這個多少錢？', phrase: 'ikura', hint: '問價錢的固定說法', next: 'n3' }] },
+      gm: { narr: '經過試吃台時，店員說了一句「……試食……」，你沒聽懂。（👂 聽力 20 以上就聽得懂）', next: 's' },
       s:  { narr: '你看到一盒很漂亮的抹茶點心，想問問看。', choices: [{ zh: '不好意思（叫住店員）', phrase: 'sumimasen', hint: '昨天問路時用過', next: 'n2' }] },
       n2: { npc: { who: 'staff', ja: 'はい、いらっしゃいませ。', kana: 'はい、いらっしゃいませ。', zh: '是，歡迎光臨。', concept: 'irasshaimase',
                    keys: [['いらっしゃいませ', '歡迎光臨']], alt: ['謝謝光臨！', '請稍等一下。'] },
@@ -248,8 +349,13 @@ export const QUESTS = [
                    keys: [['千二百円', '1200 日圓'], ['人気', '受歡迎']],
                    quiz: { q: '這盒點心多少錢？', options: ['1200 日圓', '2100 日圓', '1020 日圓'], answer: 0 } },
             choices: [
-              { zh: '請給我這個', phrase: 'kore_kudasai', hint: '昨天在便利商店說過', next: 'n4' },
-              { zh: '不用了（婉拒）', phrase: 'daijoubu', hint: '委婉說「不用了」', next: 'end_no' }] },
+              { zh: '請給我這個', phrase: 'kore_kudasai', hint: '在便利商店說過', next: 'n4' },
+              { zh: '不用了（婉拒）', phrase: 'daijoubu', hint: '委婉說「不用了」', next: 'end_no' },
+              { zh: '有便宜一點的嗎？', phrase: 'yasui', need: { shop: 30 }, hint: '「再一點」＋「便宜的」＋「有嗎」', next: 'n3y' }] },
+      n3y: { npc: { who: 'staff', ja: 'でしたら、こちらの小さい箱は八百円です。', kana: 'でしたら、こちらのちいさいはこははっぴゃくえんです。', zh: '那樣的話，這個小盒的是八百日圓。', concept: 'happyaku',
+                    keys: [['小さい箱', '小盒'], ['八百円', '800 日圓']],
+                    quiz: { q: '小盒的多少錢？', options: ['800 日圓', '8000 日圓', '1800 日圓'], answer: 0 } },
+             choices: [{ zh: '請給我這個', phrase: 'kore_kudasai', hint: '在便利商店說過', money: 400, next: 'n4' }] },
       n4: { npc: { who: 'staff', ja: '袋、お付けしますか？', kana: 'ふくろ、おつけしますか？', zh: '要幫你裝袋嗎？', concept: 'fukuro',
                    keys: [['袋', '袋子'], ['お付けしますか', '要幫你附上嗎']], alt: ['要包裝成禮物嗎？', '有集點卡嗎？'] },
             choices: [
@@ -274,37 +380,55 @@ export const QUESTS = [
     id: 'matsuri', times: ['night'], cost: 1000, stamina: 30, skill: 'chat', once: true, nextDay: true, emoji: '🏮', title: '和結衣逛祭典',
     desc: '晚上七點，神社前。在拉麵店認識的結衣，真的會來嗎？',
     lockedDesc: '好像錯過了什麼邀請……（晚上去「巷子裡的拉麵店」看看）',
+    waitDesc: '約好了，明天晚上七點神社前見！',
     requires: 'yui_yes',
     bg: 'linear-gradient(160deg,#232646,#5b2d63)',
     dark: true,
     cast: {
-      yui: { name: '結衣', emoji: '👘', pitch: 1.3 },
+      yui: { name: '結衣', emoji: '👘', pitch: 1.3, skill: 'chat' },
       oji: { name: '攤販大叔', emoji: '👨', pitch: 0.8, skill: 'food' },
     },
     start: 's',
     nodes: {
       s:  { narr: '神社前掛滿了燈籠。穿著浴衣的結衣向你揮手。', next: 'n2' },
       n2: { npc: { who: 'yui', ja: 'こんばんは！ 来てくれて、ありがとう。', kana: 'こんばんは！ きてくれて、ありがとう。', zh: '晚安！謝謝你來。', concept: 'kitekurete' },
-            choices: [{ zh: '晚安！', phrase: 'konbanwa', hint: '結衣昨天見面時說的第一句話', next: 'n3' }] },
+            choices: [{ zh: '晚安！', phrase: 'konbanwa', hint: '結衣昨天見面時說的第一句話', next: 'n2b' }] },
+      n2b: { narr: '結衣穿著深藍色的浴衣，身後的燈籠一路延伸到神社。', choices: [
+               { zh: '好漂亮呢（燈籠）', phrase: 'kirei', hint: '「漂亮」＋「呢」', next: 'n3' },
+               { zh: '浴衣很適合妳呢', phrase: 'yukata', need: { chat: 30 }, hint: '「浴衣」＋「很適合」＋「呢」', affection: 1, next: 'n2y' }] },
+      n2y: { npc: { who: 'yui', ja: 'え、本当ですか？ ……ありがとう。ちょっと恥ずかしいな。', kana: 'え、ほんとうですか？ ……ありがとう。ちょっとはずかしいな。', zh: '欸，真的嗎？……謝謝。有點害羞呢。', concept: 'hazukashii',
+                    keys: [['本当', '真的'], ['恥ずかしい', '害羞']] }, next: 'n3' },
       n3: { npc: { who: 'yui', ja: '何か食べたいもの、ありますか？ たこ焼きとか、焼きそばとか。', kana: 'なにかたべたいもの、ありますか？ たこやきとか、やきそばとか。', zh: '有什麼想吃的嗎？像是章魚燒、炒麵之類的。', concept: 'tabetai' },
             choices: [
               { zh: '章魚燒', phrase: 'takoyaki', hint: '食物名稱＋「がいいです」', next: 'n4' },
-              { zh: '炒麵', phrase: 'yakisoba', hint: '食物名稱＋「がいいです」', next: 'n4' }] },
+              { zh: '炒麵', phrase: 'yakisoba', hint: '食物名稱＋「がいいです」', next: 'n4' },
+              { zh: '兩種各來一個，一起分著吃', phrase: 'hitotsuzutsu', need: { food: 20 }, hint: '「一個一個地」＋「請給我」', affection: 1, next: 'n4' }] },
       n4: { narr: '你們走到攤位前。', next: 'n5' },
       n5: { npc: { who: 'oji', ja: 'へい、らっしゃい！ いくつ？', kana: 'へい、らっしゃい！ いくつ？', zh: '嘿，歡迎！要幾份？', concept: 'ikutsu' },
             choices: [{ zh: '請給我兩份', phrase: 'futatsu', hint: '「兩個」＋「請給我」', next: 'n6' }] },
       n6: { npc: { who: 'oji', ja: 'はいよ、二つで千円！', kana: 'はいよ、ふたつでせんえん！', zh: '好嘞，兩份一千日圓！', concept: 'roppyaku',
                    keys: [['二つで', '兩個一共'], ['千円', '1000 日圓']],
                    quiz: { q: '兩份一共多少錢？', options: ['1000 日圓', '500 日圓', '2000 日圓'], answer: 0 } }, next: 'n7' },
-      n7: { narr: '你付了錢，把一份遞給結衣。', next: 'n8' },
-      n8: { npc: { who: 'yui', ja: 'え、いいんですか？ ありがとう！ ……ん、おいしい！', kana: 'え、いいんですか？ ありがとう！ ……ん、おいしい！', zh: '欸，可以嗎？謝謝！……嗯，好好吃！', concept: 'iindesuka' },
-            choices: [{ zh: '很好吃呢', phrase: 'oishii', hint: '昨天在拉麵店說過', next: 'n9' }] },
+      n7: { narr: '你付了錢，把一份遞給結衣。她吃了一口，開心地笑了。', next: 'n8' },
+      n8: { npc: { who: 'yui', ja: '屋台の食べ物、好きですか？', kana: 'やたいのたべもの、すきですか？', zh: '你喜歡攤販的食物嗎？', concept: 'yatai',
+                   keys: [['屋台', '攤販'], ['好きですか', '喜歡嗎']] },
+            choices: [
+              { zh: '很喜歡', phrase: 'daisuki', hint: '「很喜歡」是一個詞', affection: 1, next: 'n9' },
+              { zh: '還可以', phrase: 'maamaa', hint: '「馬馬虎虎」', next: 'n9' },
+              { zh: '不太喜歡', phrase: 'amari', hint: '「不太」＋「喜歡＋不是」', affection: -1, next: 'n9' }] },
       n9: { narr: '遠處傳來「咻——」的聲音，夜空亮了起來。', next: 'n10' },
-      n10: { npc: { who: 'yui', ja: 'あ、花火！ ……ねえ、また日本に来ますか？', kana: 'あ、はなび！ ……ねえ、またにほんにきますか？', zh: '啊，煙火！……吶，你還會再來日本嗎？', concept: 'mata' },
+      n10: { npc: { who: 'yui', ja: 'あ、花火！ ……きれいですね。', kana: 'あ、はなび！ ……きれいですね。', zh: '啊，煙火！……好漂亮啊。', concept: 'hanabi',
+                    keys: [['花火', '煙火'], ['きれい', '漂亮']] },
              choices: [
-               { zh: '會，我會再來', phrase: 'mata_kimasu', hint: '「又」＋「來」', next: 'end' },
-               { zh: '我想再見到你', phrase: 'aitai', hint: '「又」＋「見面」＋「想要」', next: 'end' }] },
-      end: { end: true, narr: '煙火在夜空中綻放。你發現，自己已經能用日文跟人聊天了。' },
+               { zh: '真的很漂亮', phrase: 'hontou_kirei', hint: '「真的」＋「漂亮」', affection: 1, next: 'n11' },
+               { zh: '嗯，很漂亮', phrase: 'un_kirei', hint: '「嗯」＋「漂亮」', next: 'n11' }] },
+      n11: { npc: { who: 'yui', ja: '……ねえ、また日本に来ますか？', kana: '……ねえ、またにほんにきますか？', zh: '……吶，你還會再來日本嗎？', concept: 'mata',
+                    keys: [['また', '再'], ['来ますか', '會來嗎']] },
+             choices: [
+               { zh: '會再來的', phrase: 'mata_kuru', hint: '「再」＋「來」', affection: 1, next: 'end' },
+               { zh: '希望能再來', phrase: 'mata_kitai', hint: '「再」＋「想來」', affection: 1, next: 'end' },
+               { zh: '不知道', phrase: 'wakarimasen', hint: '「知道」的否定', next: 'end' }] },
+      end: { end: true, narr: '煙火在夜空中綻放。分開前，結衣說：「後天下午，我可以早點下班。」' },
     },
   },
   {
@@ -366,14 +490,25 @@ export const QUESTS = [
       n4: { npc: { who: 'staff', ja: '今日は焼き鳥がおすすめです。', kana: 'きょうはやきとりがおすすめです。', zh: '今天推薦烤雞肉串。', concept: 'kyou_osusume',
                    keys: [['今日は', '今天'], ['焼き鳥', '烤雞肉串'], ['おすすめ', '推薦']],
                    quiz: { q: '店員推薦什麼？', options: ['烤雞肉串', '生魚片', '炸雞'], answer: 0 } },
-            choices: [{ zh: '那就給我那個', phrase: 'sore_kudasai', hint: '「那個」＋「請給我」', next: 'n5' }] },
+            choices: [
+              { zh: '那就給我那個', phrase: 'sore_kudasai', hint: '「那個」＋「請給我」', next: 'n5' },
+              { zh: '有推薦的日本酒嗎？', phrase: 'nihonshu', need: { food: 40 }, hint: '「日本酒」＋「的推薦」＋「有嗎」', flag: 'sake', next: 'n4s' }] },
+      n4s: { npc: { who: 'staff', ja: 'このあたりの地酒はいかがですか。焼き鳥によく合いますよ。', kana: 'このあたりのじざけはいかがですか。やきとりによくあいますよ。', zh: '要不要試試這一帶的地酒？跟烤雞肉串很搭喔。', concept: 'jizake',
+                    keys: [['地酒', '本地釀的酒'], ['いかがですか', '您覺得如何'], ['よく合います', '很搭']] },
+             choices: [{ zh: '那就給我那個', phrase: 'sore_kudasai', hint: '「那個」＋「請給我」', next: 'n5' }] },
       n5: { narr: '隔壁的大叔笑著舉起酒杯。', next: 'n6' },
       n6: { npc: { who: 'oji', ja: 'ねえ、どこから来たの？', kana: 'ねえ、どこからきたの？', zh: '欸，你從哪裡來的？', concept: 'dokokara',
                    keys: [['どこから', '從哪裡'], ['来たの', '來的（口語）']], alt: ['你住在哪裡？', '你一個人嗎？'] },
             choices: [{ zh: '我從台灣來', phrase: 'taiwan_kara', hint: '「台灣」＋「從」＋「來了」', next: 'n7' }] },
       n7: { npc: { who: 'oji', ja: 'おお、台湾か！ 乾杯しよう！', kana: 'おお、たいわんか！ かんぱいしよう！', zh: '喔，台灣啊！來乾杯吧！', concept: 'kanpai_invite',
                    keys: [['乾杯しよう', '來乾杯吧']], alt: ['台灣很熱吧！', '下次再見！'] },
-            choices: [{ zh: '乾杯！', phrase: 'kanpai', hint: '中文也這樣說', next: 'n8' }] },
+            choices: [{ zh: '乾杯！', phrase: 'kanpai', hint: '中文也這樣說', next: 'n7c' }] },
+      n7c: { narr: '大叔的話匣子打開了。', choices: [
+               { zh: '這裡很好吃呢', phrase: 'oishii', hint: '「好吃」＋「です」', next: 'n8' },
+               { zh: '您是做什麼工作的？', phrase: 'oshigoto', need: { chat: 25 }, hint: '「工作」＋「是什麼」', money: 300, next: 'n7w' }] },
+      n7w: { npc: { who: 'oji', ja: '会社員だよ。毎日残業で疲れるよ。ほら、焼き鳥一本おごるよ！', kana: 'かいしゃいんだよ。まいにちざんぎょうでつかれるよ。ほら、やきとりいっぽんおごるよ！', zh: '上班族啦。每天加班好累。來，請你一串烤雞！', concept: 'ogoru',
+                    keys: [['会社員', '上班族'], ['残業', '加班'], ['おごる', '請客']] },
+             choices: [{ zh: '謝謝您', phrase: 'arigatou', next: 'n8' }] },
       n8: { narr: '聊著聊著，時間不早了。', choices: [{ zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n9' }] },
       n9: { npc: { who: 'staff', ja: '三千円になります。', kana: 'さんぜんえんになります。', zh: '這樣是三千日圓。', concept: 'sanzen',
                    keys: [['三千円', '3000 日圓']],
@@ -382,13 +517,121 @@ export const QUESTS = [
       end: { end: true, narr: '走出居酒屋，已經很晚了……末班車還有嗎？' },
     },
   },
+  {
+    id: 'yui_cafe', times: ['pm'], cost: 600, stamina: 15, skill: 'chat', once: true, hidden: true,
+    requires: 'quest:matsuri', nextDay: true, emoji: '☕', title: '和結衣喝咖啡',
+    desc: '結衣今天提早下班，想帶你去她常去的咖啡廳。',
+    bg: 'linear-gradient(160deg,#f3e3d3,#d6a985)',
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    start: 's',
+    nodes: {
+      s:  { narr: '你們坐在靠窗的位子。結衣點了熱可可，看起來比前兩天放鬆一些。', next: 'n1' },
+      n1: { npc: { who: 'yui', ja: 'この前のお祭り、楽しかったです。', kana: 'このまえのおまつり、たのしかったです。', zh: '上次的祭典很開心。', concept: 'tanoshikatta',
+                   keys: [['この前', '上次'], ['楽しかった', '很開心']] },
+            choices: [
+              { zh: '我也是', phrase: 'watashimo', hint: '「我」＋「也」', affection: 1, next: 'n2' },
+              { zh: '謝謝妳約我', phrase: 'sasotte', hint: '「約」＋「為我做」＋「謝謝」', affection: 1, next: 'n2' }] },
+      n2: { npc: { who: 'yui', ja: 'わたし、会社員なんです。最近ちょっと忙しくて。', kana: 'わたし、かいしゃいんなんです。さいきんちょっといそがしくて。', zh: '我是上班族。最近有點忙。', concept: 'yui_work',
+                   keys: [['会社員', '上班族'], ['最近', '最近'], ['忙しくて', '很忙']] },
+            choices: [
+              { zh: '辛苦了', phrase: 'otsukare', hint: '日本人對工作的人最常說的一句', affection: 1, next: 'n3' },
+              { zh: '這樣啊', phrase: 'soudesuka', hint: '最基本的附和', next: 'n3' },
+              { zh: '工作很累嗎？', phrase: 'taihen', need: { chat: 30 }, hint: '「工作」＋「辛苦嗎」', affection: 1, next: 'n2t' }] },
+      n2t: { npc: { who: 'yui', ja: 'はい、ちょっと。でも、今日は話せてうれしいです。', kana: 'はい、ちょっと。でも、きょうははなせてうれしいです。', zh: '嗯，有一點。不過，今天能跟你聊天很開心。', concept: 'hanasete',
+                    keys: [['でも', '不過'], ['話せて', '能聊天'], ['うれしい', '開心']] }, next: 'n3' },
+      n3: { npc: { who: 'yui', ja: 'あのラーメン屋、残業の後によく行くんです。スープが好きで。', kana: 'あのらーめんや、ざんぎょうのあとによくいくんです。すーぷがすきで。', zh: '那家拉麵店，我加班後常去。因為喜歡那個湯頭。', concept: 'zangyou',
+                   keys: [['残業の後', '加班之後'], ['よく行く', '常去']] },
+            choices: [
+              { zh: '原來如此', phrase: 'naruhodo', hint: '恍然大悟時說的', affection: 1, next: 'n4' },
+              { zh: '嗯', phrase: 'un', hint: '最短的附和', next: 'n4' },
+              { zh: '下次也一起去吧', phrase: 'tsugimo', need: { chat: 40 }, hint: '「下次也」＋「一起」＋「去吧」', affection: 1, next: 'n3t' }] },
+      n3t: { npc: { who: 'yui', ja: 'え……はい、ぜひ！', kana: 'え……はい、ぜひ！', zh: '欸……好，一定！', concept: 'zehi',
+                    keys: [['ぜひ', '一定（很樂意）']] }, next: 'n4' },
+      n4: { npc: { who: 'yui', ja: 'あ、明日の夜、わたしの好きな居酒屋に行きませんか？', kana: 'あ、あしたのよる、わたしのすきないざかやにいきませんか？', zh: '啊，明天晚上，要不要去我喜歡的居酒屋？', concept: 'izakaya_invite',
+                   keys: [['居酒屋', '居酒屋'], ['行きませんか', '要不要去']] },
+            choices: [{ zh: '好啊，一起去', phrase: 'ikimashou', hint: '「好耶」＋「一起去吧」', next: 'end' }] },
+      end: { end: true, narr: '走出咖啡廳，結衣揮手說「また明日」。你發現自己有點期待明天。' },
+    },
+  },
+  {
+    id: 'yui_izakaya', times: ['night'], cost: 2500, stamina: 25, skill: 'chat', once: true, hidden: true,
+    requires: 'quest:yui_cafe', nextDay: true, emoji: '🍶', title: '和結衣去居酒屋',
+    desc: '結衣下班後，帶你去她喜歡的小居酒屋。',
+    bg: 'linear-gradient(160deg,#2b1d2e,#7a3b3b)',
+    dark: true,
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    start: 's',
+    nodes: {
+      s:  { narr: '店裡燈光溫暖，結衣點了幾樣下酒菜。她看起來比前幾天更願意多聊一點。', next: 'n1' },
+      n1: { npc: { who: 'yui', ja: '台湾って、どんなところですか？', kana: 'たいわんって、どんなところですか？', zh: '台灣是什麼樣的地方？', concept: 'donna',
+                   keys: [['どんなところ', '什麼樣的地方']] },
+            choices: [
+              { zh: '很熱鬧', phrase: 'nigiyaka', hint: '「熱鬧」是形容詞', affection: 1, next: 'n2' },
+              { zh: '食物很好吃', phrase: 'tabemono', hint: '「食物」＋「好吃」', affection: 1, next: 'n2' },
+              { zh: '還可以', phrase: 'maamaa', hint: '「馬馬虎虎」', next: 'n2' }] },
+      n2: { npc: { who: 'yui', ja: 'わたし、写真を撮るのが好きなんです。', kana: 'わたし、しゃしんをとるのがすきなんです。', zh: '我喜歡拍照。', concept: 'shashin',
+                   keys: [['写真を撮る', '拍照'], ['好きなんです', '喜歡']] },
+            choices: [
+              { zh: '我也喜歡拍照', phrase: 'watashimo_suki', hint: '「我也」＋「喜歡」', affection: 1, next: 'n3' },
+              { zh: '這樣啊', phrase: 'soudesuka', hint: '最基本的附和', next: 'n3' },
+              { zh: '下次給我看妳拍的照片', phrase: 'shashin', need: { chat: 40 }, hint: '「下次」＋「照片」＋「給我看」', affection: 1, next: 'n2t' }] },
+      n2t: { npc: { who: 'yui', ja: 'じゃあ、今見せますね。これ、お祭りの日の花火です。', kana: 'じゃあ、いまみせますね。これ、おまつりのひのはなびです。', zh: '那現在就給你看。這是祭典那天的煙火。', concept: 'misemasu',
+                    keys: [['今見せますね', '現在給你看'], ['お祭りの日', '祭典那天']] }, next: 'n3' },
+      n3: { npc: { who: 'yui', ja: 'こうやって話せるの、……ちょっと、うれしいです。', kana: 'こうやってはなせるの、……ちょっと、うれしいです。', zh: '能像這樣聊天，……有點開心。', concept: 'ureshii',
+                   keys: [['こうやって', '像這樣'], ['うれしい', '開心']] },
+            choices: [
+              { zh: '謝謝', phrase: 'arigatou', hint: '最基本的謝謝', affection: 1, next: 'end' },
+              { zh: '嗯', phrase: 'un', hint: '最短的附和', next: 'end' },
+              { zh: '我也是，跟妳在一起很開心', phrase: 'tanoshii', need: { chat: 50 }, hint: '「我也是」＋「在一起的話」＋「開心」', affection: 1, next: 'n3t' }] },
+      n3t: { npc: { who: 'yui', ja: '……わたしもです。', kana: '……わたしもです。', zh: '……我也是。', concept: 'watashimo_yui' }, next: 'end' },
+      end: { end: true, narr: '回去的路上，結衣小聲說：「明日、駅まで見送りに行きますね。」（明天我去車站送你。）' },
+    },
+  },
+  {
+    id: 'farewell', times: ['pm'], day: 5, cost: 0, stamina: 0, skill: 'chat', once: true, hidden: true,
+    requires: 'quest:matsuri', emoji: '🚉', title: '車站的告別',
+    desc: '要離開東京了。結衣特地來車站送你。',
+    bg: 'linear-gradient(160deg,#dfe6f0,#9fb3cc)',
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    start: 's',
+    nodes: {
+      s:  { narr: '月台上人來人往。結衣站在剪票口前，看到你就小跑步過來。', next: 'n1' },
+      n1: { npc: { who: 'yui', ja: 'また会えますか？', kana: 'またあえますか？', zh: '還能再見面嗎？', concept: 'mata_aeru',
+                   keys: [['会えますか', '能見面嗎']] },
+            choices: [
+              { zh: '一定會再見面的', phrase: 'kanarazu', hint: '「一定」＋「再」＋「見面吧」', affection: 1, next: 'n2' },
+              { zh: '希望能再見面', phrase: 'aitai', hint: '「再」＋「見面」＋「想要」', affection: 1, next: 'n2' },
+              { zh: '不知道', phrase: 'wakarimasen', hint: '「知道」的否定', next: 'n2' }] },
+      n2: { npc: { who: 'yui', ja: '……ありがとう。', kana: '……ありがとう。', zh: '……謝謝你。', concept: 'arigatou_yui' },
+            choices: [
+              { zh: '下次再一起吃拉麵吧', phrase: 'ramen_mata', hint: '「下次也」＋「一起」＋「拉麵」＋「吃吧」', affection: 1, next: 'route' },
+              { zh: '謝謝妳這幾天的陪伴', phrase: 'kono_suujitsu', hint: '「這幾天」＋「謝謝」', next: 'route' },
+              { zh: '結衣，我喜歡妳', phrase: 'suki', need: { chat: 50 }, hint: '「結衣さん」＋「喜歡」', flag: 'confess', next: 'route' }] },
+      // 依好感度和有沒有告白，決定結衣的回應
+      route: { branch: [
+        { when: s => s.flags.confess && s.affection >= 8, next: 'r_love' },
+        { when: s => s.flags.confess, next: 'r_soft' },
+        { when: s => s.affection >= 5, next: 'r_promise' },
+        { next: 'r_friend' }] },
+      r_love: { npc: { who: 'yui', ja: '……わたしも、少し好きです。また会いましょう。', kana: '……わたしも、すこしすきです。またあいましょう。', zh: '……我也有一點喜歡你。我們再見面吧。', concept: 'r_love',
+                       keys: [['少し', '一點'], ['好きです', '喜歡'], ['会いましょう', '見面吧']] }, next: 'end_love' },
+      r_soft: { npc: { who: 'yui', ja: 'え……ありがとう。次に会うとき、もっとゆっくり話しましょう。', kana: 'え……ありがとう。つぎにあうとき、もっとゆっくりはなしましょう。', zh: '欸……謝謝。下次見面時，再慢慢聊吧。', concept: 'r_soft',
+                       keys: [['次に会うとき', '下次見面時'], ['ゆっくり', '慢慢地']] }, next: 'end' },
+      r_promise: { npc: { who: 'yui', ja: 'うん、約束です。次はわたしが案内します。', kana: 'うん、やくそくです。つぎはわたしがあんないします。', zh: '嗯，說好了。下次我來帶路。', concept: 'r_promise',
+                          keys: [['約束', '約定'], ['案内します', '帶路']] }, next: 'end' },
+      r_friend: { npc: { who: 'yui', ja: 'もしまた日本に来たら、またラーメン食べましょうね。', kana: 'もしまたにほんにきたら、またらーめんたべましょうね。', zh: '如果再來日本的話，再一起吃拉麵吧。', concept: 'r_friend',
+                         keys: [['もし', '如果'], ['来たら', '來的話']] }, next: 'end' },
+      end_love: { end: true, narr: '電車門關上前，結衣紅著臉揮手。這趟旅程，你帶走的不只是伴手禮。' },
+      end: { end: true, narr: '電車開動了。窗外的結衣一直揮手，直到看不見為止。' },
+    },
+  },
 ];
 
 // EVENTS：在早上出門前、或晚上回旅館時觸發，結果看數值
 //   at      'morning'（新的一天開始）或 'night'（這一天結束）
 //   day     哪一天（不寫代表每天都可能）；after 今天去過哪個地點；requires 需要的旗標或去過的地點
-//   need    數值門檻，全部達到算成功
-//   success / fail  { text, money, stamina, flag, stats }
+//   need    數值門檻，全部達到算成功；pass 有這個旗標就直接成功（例如阿姨畫的手繪地圖）
+//   success / fail  { text, money, stamina, flag, stats, affection }
 export const EVENTS = [
   {
     id: 'delay', at: 'morning', day: 2, emoji: '🚃', title: '電車誤點',
@@ -402,8 +645,8 @@ export const EVENTS = [
     id: 'lasttrain', at: 'night', after: 'izakaya', emoji: '🌃', title: '末班車',
     story: '從居酒屋出來已經快十二點。車站的廣播在說什麼？',
     ja: 'まもなく、最終電車が発車します。', zh: '最後一班電車即將發車。', keys: [['最終電車', '末班車'], ['発車します', '要開了']],
-    need: { listen: 25, road: 15 },
-    success: { text: '你聽懂「最終電車」，問了站務員「〇〇駅はどこですか」，跑著趕上了末班車！', stats: { road: 3 } },
+    need: { listen: 25, road: 15 }, pass: 'hand_map',
+    success: { text: '你聽懂「最終電車」，想起問路時記下的路線，跑著趕上了末班車！', stats: { road: 3 } },
     fail: { text: '等你搞懂廣播的意思，末班車已經開走了。只好搭計程車回旅館。', money: -6000 },
   },
   {
@@ -411,24 +654,29 @@ export const EVENTS = [
     story: '早上手機響了，是結衣傳來的 LINE。',
     ja: '昨日は楽しかったね！ また連絡してね。', zh: '昨天好開心喔！要再跟我聯絡喔。', keys: [['楽しかった', '很開心'], ['連絡してね', '要聯絡喔']],
     need: { chat: 25 },
-    success: { text: '你看懂了，回她「わたしも楽しかったです！」。你們約好下次你來日本時再見面。', flag: 'yui_friend', stats: { chat: 5 } },
+    success: { text: '你看懂了，回她「わたしも楽しかったです！」。她回了一個開心的貼圖。', flag: 'yui_friend', stats: { chat: 5 }, affection: 1 },
     fail: { text: '訊息看不太懂，你只回了一個貼圖。好像有點可惜……' },
   },
 ];
 
 // ENDINGS：最後一天結束時，由上往下找第一個符合的結局
-//   s 是存檔：s.stats、s.money、s.done（去過的地點）、s.flags
+//   s 是存檔：s.stats、s.money、s.done（去過的地點）、s.flags、s.affection（結衣的好感度）
 export const ENDINGS = [
+  // 結衣的戀愛結局（有去車站告別才會判定）
+  { id: 'love', emoji: '💗', title: '告白成功', text: '結衣也有一點喜歡你。你們約好，下次見面時要用更流利的日文好好聊。',
+    when: s => s.done.includes('farewell') && s.flags.confess && s.affection >= 8 },
+  { id: 'promise', emoji: '🤙', title: '約好再見面', text: '「下次我來帶路。」你們約好了，下次來日本要再一起出去。',
+    when: s => s.done.includes('farewell') && s.affection >= 5 },
   { id: 'perfect', emoji: '🌸', title: '完美旅程', text: '購物、問路、點餐、聊天、聽力樣樣都行。下次來日本，你已經不需要旅遊書了。',
-    when: s => Object.values(s.stats).every(v => v >= 25) },
-  { id: 'friend', emoji: '🎎', title: '交到日本朋友', text: '旅程最珍貴的不是景點，而是結衣。你們約好了，下次見面要用更流利的日文聊天。',
-    when: s => s.flags.yui_friend || (s.done.includes('matsuri') && s.stats.chat >= 30) },
+    when: s => Object.values(s.stats).every(v => v >= 35) },
+  { id: 'friend', emoji: '🎎', title: '交到日本朋友', text: '旅程最珍貴的不是景點，而是結衣。「如果再來日本，再一起吃拉麵吧。」',
+    when: s => s.done.includes('farewell') || s.flags.yui_friend || (s.done.includes('matsuri') && s.stats.chat >= 40) },
   { id: 'gourmet', emoji: '🍜', title: '美食達人', text: '拉麵、居酒屋、咖啡廳，你都能自在地點餐，還會問「おすすめは何ですか」。',
-    when: s => s.stats.food >= 40 },
+    when: s => s.stats.food >= 50 || (s.stats.food >= 40 && s.flags.sake) },
   { id: 'shopper', emoji: '🛍️', title: '購物達人', text: '你不只買得到想要的東西，還懂得免稅省錢，回國時錢包還有餘裕。',
-    when: s => s.stats.shop >= 40 && s.money >= 8000 },
+    when: s => s.stats.shop >= 50 && s.money >= 12000 },
   { id: 'explorer', emoji: '🚃', title: '一個人走遍日本', text: '聽得懂廣播、問得到路，你已經可以一個人在日本自由移動了。',
-    when: s => s.stats.road >= 20 && s.stats.listen >= 35 },
+    when: s => s.stats.road >= 30 && s.stats.listen >= 50 },
   { id: 'lost', emoji: '😵', title: '迷路大王', text: '這趟旅程你一次路都沒問過……但迷路也是旅行的一部分。下次記得說「すみません」！',
     when: s => s.stats.road < 5 },
   { id: 'normal', emoji: '✈️', title: '平凡又美好的旅程', text: '雖然還說得不太流利，但你用自己的日文，完成了第一次的日本旅行。',

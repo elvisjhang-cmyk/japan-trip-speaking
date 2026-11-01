@@ -5,7 +5,7 @@ import { PHRASES, QUESTS, STATS, TIMES, TRIP, EVENTS, ENDINGS, META_REPEAT } fro
 import { judge } from './judge.js';
 import { speak, stopSpeaking, listen, asrSupported, ttsSupported, hasJaVoice } from './speech.js';
 
-const SAVE_KEY = 'nihongo-trip-v2';
+const SAVE_KEY = 'nihongo-trip-v3';
 const MAX_MASTERY = 4;
 const LEVEL_LABEL = ['🌱 新句子：先聽，再跟著說', '🔁 跟讀練習', '🧠 回想看看', '✨ 自然說出來'];
 const CONFUSED = [['え？', '欸？'], ['すみません、もう一度……？', '不好意思，可以再說一次嗎……？'], ['えっと……？', '呃……？']];
@@ -17,7 +17,7 @@ function freshSave(keep = {}) {
   return {
     day: 1, slot: 0, money: TRIP.money, stamina: TRIP.stamina,
     stats: Object.fromEntries(Object.keys(STATS).map(k => [k, 0])),
-    usage: {}, today: [], done: [], flags: {}, started: false, finished: false, ending: null,
+    usage: {}, today: [], done: [], flags: {}, affection: 0, started: false, finished: false, ending: null,
     mastery: {}, listen: {}, heard: {}, exposure: {}, endings: [],
     settings: { quiet: !asrSupported, alwaysSub: false },
     ...keep,
@@ -46,9 +46,16 @@ const mastery = id => save.mastery[id] ?? 0;
 const listenLevel = concept => save.listen[concept] ?? 0;
 const shuffle = arr => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(([, v]) => v);
 const stars = n => '★'.repeat(n) + '☆'.repeat(MAX_MASTERY - n);
+// 最後一天只有上午和下午（下午搭車回台灣）
+const slotsOf = day => day === TRIP.days ? TRIP.lastDaySlots : TIMES.length;
 const unlocked = q => !q.requires || (save.flags[q.requires] && (!q.nextDay || save.day > save.flags[q.requires]));
 const meets = need => !need || Object.entries(need).every(([k, v]) => save.stats[k] >= v);
 const yen = n => `¥${n.toLocaleString()}`;
+// 選項的額外效果（數值門檻選項的獎勵），顯示在通過畫面
+const effectText = c => [
+  c.money > 0 && `💴 省下 ${yen(c.money)}`, c.money < 0 && `💴 多花 ${yen(-c.money)}`,
+  c.stamina && `⚡ +${c.stamina}`, c.affection > 0 && `💗 結衣的好感度 +${c.affection}`, c.affection < 0 && `💔 結衣的好感度 −${-c.affection}`,
+].filter(Boolean).join('　');
 const needText = need => Object.entries(need).map(([k, v]) => `${STATS[k].emoji} ${STATS[k].name} ${v}`).join('、');
 const quiet = () => save.settings.quiet || !asrSupported;
 const speakerOf = () => cur.lastSpeaker || Object.values(cur.quest.cast)[0];
@@ -89,21 +96,22 @@ function viewTitle() {
            <button class="btn ghost" data-act="reset">從頭開始</button>`
         : '<button class="btn primary" data-act="start">開始旅程</button>'}
     </div>
-    <p class="fine">建議戴耳機、在安靜的地方玩。原型版本：3 天、8 個地點、${ENDINGS.length} 種結局。</p>
+    <p class="fine">建議戴耳機、在安靜的地方玩。原型版本：5 天 4 夜、${QUESTS.length} 個地點、${ENDINGS.length} 種結局。</p>
   </main>`;
 }
 
 function viewStatus() {
-  const dots = Array.from({ length: TRIP.days * TIMES.length }, (_, i) => {
-    const now = (save.day - 1) * TIMES.length + save.slot;
-    return `<i class="${i < now ? 'past' : i === now ? 'now' : ''}"></i>`;
-  }).join('');
+  const dots = Array.from({ length: TRIP.days }, (_, d) => `<span>${Array.from({ length: slotsOf(d + 1) }, (_, i) => {
+    const cls = d + 1 < save.day || (d + 1 === save.day && i < save.slot) ? 'past' : d + 1 === save.day && i === save.slot ? 'now' : '';
+    return `<i class="${cls}"></i>`;
+  }).join('')}</span>`).join('');
   const bars = Object.entries(STATS).map(([k, st]) =>
     `<li><span>${st.emoji} ${st.name}</span><div class="bar"><i style="width:${save.stats[k]}%"></i></div><b>${save.stats[k]}</b></li>`).join('');
   return `<section class="status">
     <div class="res">
       <span>💴 <b>${yen(save.money)}</b></span>
       <span>⚡ <b>${save.stamina}</b>/${TRIP.stamina}</span>
+      ${save.done.includes('ramen') ? `<span>💗 結衣 <b>${save.affection}</b>/10</span>` : ''}
     </div>
     <div class="dots" title="旅程進度">${dots}</div>
     <ul class="skills compact">${bars}</ul>
@@ -113,29 +121,35 @@ function viewStatus() {
 const INTRO = {
   '1-0': '飯店房間裡，你拉開窗簾。第一次來日本，有點緊張，也有點期待。<br>每天有<b>上午、下午、晚上</b>三個時段，排好要去哪裡吧。',
   '2-0': '第二天。學過的句子這次<b>不顯示字幕</b>，聽過的店員用語會先考你聽不聽得懂。',
-  '3-0': '旅程的最後一天。明天一早就要搭飛機回台灣了。',
+  '3-0': '第三天。已經漸漸習慣東京的街道了。',
+  '4-0': '第四天。明天就要回台灣了，好好把握吧。',
+  '5-0': '旅程的最後一天。下午就要去車站，搭車到機場了。',
+  '5-1': '該去車站了。行李已經收好。',
 };
 
 function viewPlan() {
   const time = TIMES[save.slot];
   const intro = INTRO[`${save.day}-${save.slot}`] ||
     (save.slot === 1 ? '下午了，接下來去哪裡？' : '天黑了，街上的燈籠亮了起來。');
-  const now = QUESTS.filter(q => q.times.includes(time.key));
-  const later = QUESTS.filter(q => !q.times.includes(time.key));
+  // hidden 的地點（結衣的約會）解鎖之前不顯示；day 限定某一天
+  const visible = QUESTS.filter(q => (!q.hidden || unlocked(q)) && (!q.day || q.day === save.day))
+    .sort((a, b) => !!b.hidden - !!a.hidden);
+  const now = visible.filter(q => q.times.includes(time.key));
+  const later = visible.filter(q => !q.times.includes(time.key));
   const card = q => {
     const open = unlocked(q);
     const why = !open ? '' : q.once && save.done.includes(q.id) ? '已經去過了'
       : save.today.includes(q.id) ? '今天去過了'
       : save.money < q.cost ? '錢不夠' : save.stamina < q.stamina ? '太累了，先休息一下' : '';
     const ok = open && !why;
-    return `<button class="quest ${save.done.includes(q.id) ? 'done' : ''} ${ok ? '' : 'locked'}" ${ok ? `data-act="quest" data-id="${q.id}"` : 'disabled'}>
+    return `<button class="quest ${save.done.includes(q.id) ? 'done' : ''} ${ok ? '' : 'locked'} ${q.hidden ? 'date' : ''}" ${ok ? `data-act="quest" data-id="${q.id}"` : 'disabled'}>
       <span class="q-emoji">${open ? q.emoji : '🔒'}</span>
-      <span class="q-body"><strong>${open ? esc(q.title) : '？？？'}</strong><small>${esc(open ? q.desc : save.flags[q.requires] ? '約好了，明天晚上見！' : q.lockedDesc)}</small>
+      <span class="q-body"><strong>${open ? esc(q.title) : '？？？'}</strong><small>${esc(open ? q.desc : save.flags[q.requires] ? q.waitDesc : q.lockedDesc)}</small>
         ${open ? `<span class="tags"><span>${q.cost ? yen(q.cost) : '免費'}</span><span>⚡ ${q.stamina}</span><span>${STATS[q.skill].emoji} ${STATS[q.skill].name}</span></span>` : ''}</span>
       <span class="q-state">${why ? `<em>${why}</em>` : save.done.includes(q.id) ? '✓ 去過' : ''}</span>
     </button>`;
   };
-  const night = save.slot === TIMES.length - 1;
+  const night = save.slot === slotsOf(save.day) - 1;
   const t = toast;
   toast = '';
   return `<main class="page plan">
@@ -151,7 +165,7 @@ function viewPlan() {
     <div class="quests">${now.map(card).join('')}</div>
     <div class="actions">
       <button class="btn" data-act="rest">${night
-        ? `🌙 回旅館睡覺${save.day < TRIP.days ? '（結束今天）' : '（結束旅程）'}`
+        ? save.day < TRIP.days ? '🌙 回旅館睡覺（結束今天）' : '✈️ 搭車去機場（結束旅程）'
         : `🏨 回旅館休息（⚡ +${TRIP.rest}）`}</button>
     </div>
     ${later.length ? `<details class="later"><summary>其他時段才開的地方</summary>
@@ -282,6 +296,7 @@ function viewSuccess(t) {
       ${t.switched ? `<p class="tip">你表達的是「${esc(c.zh)}」，劇情就照你說的走 👍</p>` : ''}
       <p class="stars-line">${esc(p.ja)} <span class="stars">${stars(g.after)}</span></p>
       ${t.statGain ? `<p class="gain">${STATS[t.statGain.skill].emoji} ${STATS[t.statGain.skill].name} +${t.statGain.amount}</p>` : ''}
+      ${effectText(c) ? `<p class="gain bonus">${c.need ? '🔓 練好日文的獎勵：' : ''}${effectText(c)}</p>` : ''}
       <button class="btn primary wide" data-act="advance">繼續 ▶</button>
     </div>`;
 }
@@ -306,7 +321,7 @@ function viewResult() {
     ${topbar(`${cur.quest.emoji} 完成`)}
     <section class="morning"><div class="sun">${cur.quest.emoji}</div><h2>${esc(cur.quest.title)}</h2><p>${esc(cur.endNarr)}</p></section>
     <section class="summary">
-      <div class="res"><span>💴 ${r.money ? `−${yen(r.money)}` : '沒花錢'}${r.refund ? `（省下 ${yen(r.refund)}）` : ''}</span><span>⚡ −${r.stamina}</span></div>
+      <div class="res"><span>💴 ${r.money ? `−${yen(r.money)}` : '沒花錢'}${r.refund > 0 ? `（省下 ${yen(r.refund)}）` : ''}</span><span>⚡ ${r.stamina > 0 ? `−${r.stamina}` : `+${-r.stamina}`}</span></div>
       <div class="gains">${statRows || '<span>這次數值沒有成長，下次試著不看提示說出來吧</span>'}</div>
     </section>
     <h3 class="section-title">🗣️ 這次說出口的句子</h3>
@@ -395,7 +410,7 @@ function render() {
 // ---------- 劇情流程 ----------
 
 function startQuest(id) {
-  cur = { quest: QUESTS.find(q => q.id === id), gains: {}, listenGains: {}, statGains: {}, refund: 0, lastSpeaker: null };
+  cur = { quest: QUESTS.find(q => q.id === id), gains: {}, listenGains: {}, statGains: {}, refund: 0, staminaBonus: 0, lastSpeaker: null };
   screen = 'scene';
   goto(cur.quest.start);
 }
@@ -404,6 +419,10 @@ function goto(id) {
   stopSpeaking();
   cur.turn?.listening?.stop();
   const node = cur.quest.nodes[id];
+  // 數值不夠的節點（例如聽力不夠就聽不懂的話）改走 else
+  if (node.need && !meets(node.need)) return goto(node.else);
+  // 分歧節點：依存檔狀態（例如好感度）決定往哪走
+  if (node.branch) return goto(node.branch.find(b => !b.when || b.when(save)).next);
   cur.node = node;
   cur.turn = null;
   cur.subRevealed = false;
@@ -480,10 +499,12 @@ function finishQuest(node) {
   const cost = node.cost ?? q.cost;
   const money = Math.max(0, cost - cur.refund);
   save.money -= money;
-  save.stamina = Math.max(0, save.stamina - q.stamina);
+  const stamina = q.stamina - cur.staminaBonus;
+  save.stamina = Math.min(TRIP.stamina, Math.max(0, save.stamina - stamina));
   save.today.push(q.id);
   if (!save.done.includes(q.id)) save.done.push(q.id);
-  cur.resources = { money, refund: cost ? cur.refund : 0, stamina: q.stamina };
+  save.flags[`quest:${q.id}`] = save.day;
+  cur.resources = { money, refund: cost ? cur.refund : 0, stamina };
   persist();
   cur.endNarr = node.narr;
   screen = 'result';
@@ -523,10 +544,12 @@ function recordResult(choice, { hint, attempts, skipped }) {
   return gain;
 }
 
-// 選了之後才發生的效果：旗標（記下是第幾天）、金額變化
+// 選了之後才發生的效果：旗標（記下是第幾天）、金額、體力、好感度
 function applyChoice(c) {
   if (c.flag) save.flags[c.flag] = save.day;
   if (c.money) cur.refund += c.money;
+  if (c.stamina) cur.staminaBonus += c.stamina;
+  if (c.affection) save.affection = Math.max(0, Math.min(10, save.affection + c.affection));
   persist();
 }
 
@@ -535,7 +558,7 @@ function applyChoice(c) {
 function nextSlot() {
   cur = null;
   save.slot++;
-  if (save.slot >= TIMES.length) return endDay();
+  if (save.slot >= slotsOf(save.day)) return endDay();
   persist();
   screen = 'plan';
   render();
@@ -549,7 +572,7 @@ function endDay() {
   save.today = [];
   if (save.day > TRIP.days) {
     save.day = TRIP.days;
-    save.slot = TIMES.length - 1;
+    save.slot = TRIP.lastDaySlots - 1;
     save.finished = true;
     save.ending = ENDINGS.find(e => e.when(save)).id;
     if (!save.endings.includes(save.ending)) save.endings.push(save.ending);
@@ -568,7 +591,7 @@ function runEvents(at) {
       && (!e.requires || save.flags[e.requires] || save.done.includes(e.requires)))
     .map(e => {
       const stats = { ...save.stats };
-      const ok = meets(e.need);
+      const ok = meets(e.need) || !!(e.pass && save.flags[e.pass]);
       const outcome = ok ? e.success : e.fail;
       const fx = [];
       if (outcome.money) { save.money += outcome.money; fx.push(`💴 ${outcome.money > 0 ? '+' : '−'}${yen(Math.abs(outcome.money))}`); }
@@ -578,6 +601,7 @@ function runEvents(at) {
         fx.push(`${STATS[k].emoji} ${STATS[k].name} +${v}`);
       }
       if (outcome.flag) save.flags[outcome.flag] = save.day;
+      if (outcome.affection) { save.affection = Math.min(10, save.affection + outcome.affection); fx.push(`💗 結衣的好感度 +${outcome.affection}`); }
       return { ...e, ok, outcome, stats, effects: fx.join('　') };
     });
 }
@@ -705,7 +729,7 @@ const actions = {
   leave() { stopSpeaking(); cur.turn?.listening?.stop(); cur = null; screen = 'plan'; render(); },
   nextSlot() { nextSlot(); },
   rest() {
-    if (save.slot === TIMES.length - 1) return endDay();
+    if (save.slot === slotsOf(save.day) - 1) return endDay();
     save.stamina = Math.min(TRIP.stamina, save.stamina + TRIP.rest);
     toast = `🏨 回旅館休息了一下（⚡ +${TRIP.rest}）`;
     nextSlot();
@@ -754,7 +778,8 @@ const actions = {
     const t = cur.turn;
     const c = t.choices[t.chosen ?? 0];
     recordResult(c, { hint: 3, attempts: t.attempts, skipped: true });
-    applyChoice(c);
+    // 跳過只保留劇情旗標，拿不到獎勵
+    if (c.flag) { save.flags[c.flag] = save.day; persist(); }
     goto(c.next);
   },
   advance() {

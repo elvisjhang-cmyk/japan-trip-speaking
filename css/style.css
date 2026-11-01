@@ -244,9 +244,10 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 }
 .res { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; }
 .res b { font-variant-numeric: tabular-nums; }
-.dots { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin: 10px 0; }
-.dots i { height: 6px; border-radius: 999px; background: var(--line); }
-.dots i:nth-child(3n) { margin-right: 6px; }
+.dots { display: flex; gap: 8px; margin: 10px 0; }
+.dots span { flex: 3; display: flex; gap: 3px; }
+.dots span:last-child { flex: 2; }
+.dots i { flex: 1; height: 6px; border-radius: 999px; background: var(--line); }
 .dots i.past { background: var(--muted); }
 .dots i.now { background: var(--accent); }
 .skills.compact { margin: 0; gap: 4px; font-size: 13px; }
@@ -285,3 +286,5 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   .t-ja { font-size: 22px; }
 }
 .meanings span.locked { background: var(--line); color: var(--muted); }
+.gain.bonus { color: var(--accent); }
+.quest.date { border-color: #e78fa8; background: linear-gradient(90deg, rgba(231, 143, 168, .12), transparent 60%), var(--card); }
