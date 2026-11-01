@@ -244,7 +244,8 @@ function viewBubble(npc) {
   const answer = quiz?.options.find(o => o.correct)?.text;
   return `<div class="bubble">
     ${show
-      ? `<p class="ja">${esc(npc.ja)}</p>${differs(npc.kana, npc.ja) ? `<p class="kana">${esc(npc.kana)}</p>` : ''}<p class="zh">${esc(npc.zh)}</p>
+      ? `<p class="ja">${esc(npc.ja)}</p>${differs(npc.kana, npc.ja) ? `<p class="kana">${esc(npc.kana)}</p>` : ''}
+         ${npc.romaji ? `<p class="romaji">${esc(npc.romaji)}</p>` : ''}<p class="zh">${esc(npc.zh)}</p>
          ${npc.keys ? `<p class="keys">${npc.keys.map(([ja, zh]) => `<span><b>${esc(ja)}</b>＝${esc(zh)}</span>`).join('')}</p>` : ''}`
       : `<p class="nosub">🔊 ・・・<small>${pending ? '先不看字幕，用耳朵聽聽看。可以多聽幾次！' : '這句你聽過了，這次沒有字幕。'}</small></p>`}
     ${quiz && !pending
@@ -292,7 +293,7 @@ function viewTeach(t) {
   // 熟練度越高，顯示越少；每按一次提示（或答錯一次）多顯示一點
   const full = m === 0 || (m === 1 && h >= 2) || h >= 3;
   const showKana = full || m === 1;
-  const showRomaji = full || (m === 1 && h >= 1);
+  const showRomaji = showKana;
   const context = !full && m >= 2 && h >= 1;
   const partial = !full && m >= 2 && h >= 2;
   return `<div class="teach">
@@ -332,6 +333,12 @@ function viewFeedback(t) {
   return t.feedback ? `<p class="feedback ${t.fbType || ''}">${t.feedback}</p>` : '';
 }
 
+const STAR_WHY = {
+  peeked: () => '這次按了 💡 提示，星星沒有增加。下次不按提示說對，就會 +1。',
+  attempts: g => `這次說錯了 ${g.attempts} 次，星星沒有增加。下次最多錯一次就說對，就會 +1。`,
+  max: () => '已經滿星了！',
+};
+
 function viewSuccess(t) {
   const c = t.choices[t.result.idx];
   const p = PHRASES[c.phrase];
@@ -341,6 +348,7 @@ function viewSuccess(t) {
       <p class="heard">你說：「${esc(t.heard)}」</p>
       ${t.switched ? `<p class="tip">你表達的是「${esc(c.zh)}」，劇情就照你說的走 👍</p>` : ''}
       <p class="stars-line">${esc(p.ja)} <span class="stars">${stars(g.after)}</span></p>
+      <p class="star-why">${STAR_WHY[g.why]?.(g) ?? '⭐ 星星 +1！'}</p>
       ${t.statGain ? `<p class="gain">${STATS[t.statGain.skill].emoji} ${STATS[t.statGain.skill].name} +${t.statGain.amount}</p>` : ''}
       ${effectText(c) ? `<p class="gain bonus">${c.need ? '🔓 練好日文的獎勵：' : ''}${effectText(c)}</p>` : ''}
       <button class="btn primary wide" data-act="advance">繼續 ▶</button>
@@ -351,13 +359,13 @@ function viewResult() {
   const rows = Object.entries(cur.gains).map(([id, g]) => {
     const p = PHRASES[id];
     const delta = g.after - g.before;
-    return `<li><div><b>${esc(p.ja)}</b><small>${esc(p.zh)}</small></div>
+    return `<li><div><b>${esc(p.ja)}</b><small>${esc(p.romaji)}・${esc(p.zh)}</small></div>
       <span class="stars">${stars(g.after)}</span><em class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${delta > 0 ? '↑' : delta < 0 ? '再練練' : '—'}</em></li>`;
   }).join('');
   const listenRows = Object.entries(cur.listenGains).map(([id, g]) => {
     const h = save.heard[id];
     const delta = g.after - g.before;
-    return `<li><div><b>${esc(h.ja)}</b><small>${esc(h.zh)}</small></div>
+    return `<li><div><b>${esc(h.ja)}</b><small>${h.romaji ? `${esc(h.romaji)}・` : ''}${esc(h.zh)}</small></div>
       <span class="stars">${stars(g.after)}</span><em class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${delta > 0 ? '↑' : delta < 0 ? '再聽聽' : '—'}</em></li>`;
   }).join('');
   const statRows = Object.entries(cur.statGains).filter(([, v]) => v > 0)
@@ -373,7 +381,7 @@ function viewResult() {
     <h3 class="section-title">🗣️ 這次說出口的句子</h3>
     <ul class="book">${rows}</ul>
     ${listenRows ? `<h3 class="section-title">👂 這次聽力測驗的句子</h3><ul class="book">${listenRows}</ul>` : ''}
-    <p class="fine">★ 越多，下次出現時字幕和提示就越少。</p>
+    <p class="fine">不按 💡 提示說對（最多錯一次）星星就 +1。★ 越多，下次出現時字幕和提示就越少。</p>
     <div class="actions"><button class="btn primary" data-act="nextSlot">繼續 ▶</button></div>
   </main>`;
 }
@@ -408,7 +416,8 @@ function viewEvent() {
     ${topbar(`Day ${save.day}・${e.at === 'morning' ? '早上' : '晚上'}`)}
     <section class="morning"><div class="sun">${e.emoji}</div><h2>${esc(e.title)}</h2><p>${esc(e.story)}</p></section>
     <div class="bubble">
-      <p class="ja">${esc(e.ja)}</p><p class="zh">${esc(e.zh)}</p>
+      <p class="ja">${esc(e.ja)}</p>${e.kana ? `<p class="kana">${esc(e.kana)}</p>` : ''}
+      ${e.romaji ? `<p class="romaji">${esc(e.romaji)}</p>` : ''}<p class="zh">${esc(e.zh)}</p>
       ${e.keys ? `<p class="keys">${e.keys.map(([ja, zh]) => `<span><b>${esc(ja)}</b>＝${esc(zh)}</span>`).join('')}</p>` : ''}
       <div class="tools"><button class="chip" data-act="sayEvent">🔊 再聽</button></div>
     </div>
@@ -431,14 +440,14 @@ function viewBook() {
       <span class="stars">${stars(mastery(id))}</span></li>`;
   }).join('');
   const heard = Object.entries(save.heard).map(([id, h]) => `<li><button class="chip" data-act="sayHeard" data-id="${id}">🔊</button>
-      <div><b>${esc(h.ja)}</b><small>${esc(h.zh)}</small></div>
+      <div><b>${esc(h.ja)}</b><small>${h.romaji ? `${esc(h.romaji)}・` : ''}${esc(h.zh)}</small></div>
       <span class="stars">${stars(listenLevel(id))}</span></li>`).join('');
   return `<div class="overlay" data-act="closeBook">
     <div class="sheet" data-act="noop">
       <header><h3>📖 句子本</h3><button class="icon" data-act="closeBook">✕</button></header>
       ${ids.length ? `<h4>🗣️ 我會說的</h4><ul class="book">${rows}</ul>` : '<p class="empty">還沒學到句子，先去完成一個行程吧！</p>'}
       ${heard ? `<h4>👂 我聽過的（店員、路人說的話）</h4><ul class="book">${heard}</ul>` : ''}
-      <p class="fine">🗣️ ★ 越多，字幕和提示就越少；★★ 以上的句子會進入「直接開口」模式。<br>👂 ★★ 以上，對方會用接近真實的速度說話。</p>
+      <p class="fine">🗣️ 不按 💡 提示說對（最多錯一次）星星就 +1。★ 越多，字幕和提示就越少；★★ 以上的句子會進入「直接開口」模式。<br>👂 ★★ 以上，對方會用接近真實的速度說話。</p>
     </div>
   </div>`;
 }
@@ -485,7 +494,7 @@ function goto(id) {
       else if (!cur.subShown) cur.quiz = makeQuiz('對方剛剛說的是？', [npc.zh, ...distractors(npc)], 0);
     }
     save.exposure[concept] = (save.exposure[concept] || 0) + 1;
-    save.heard[concept] = { ja: npc.ja, zh: npc.zh };
+    save.heard[concept] = { ja: npc.ja, zh: npc.zh, romaji: npc.romaji };
     save.listen[concept] ??= 0;
     cur.lastSpeaker = cur.quest.cast[who];
     persist();
@@ -504,7 +513,7 @@ function startTurn(all) {
     choices, free, locked,
     // 只有一個選項時直接進入教學；有鎖住的選項時仍然列出來，讓玩家看到「數值夠就能這樣說」
     chosen: !free && choices.length === 1 && !locked.length ? 0 : null,
-    hint: 0, attempts: 0, feedback: '', result: null, listening: null,
+    hint: 0, peeked: 0, attempts: 0, feedback: '', result: null, listening: null,
   };
 }
 
@@ -573,19 +582,25 @@ function skillOf(choice) {
   return choice.skill || (npc && cur.quest.cast[npc.who].skill) || cur.quest.skill;
 }
 
-function recordResult(choice, { hint, attempts, skipped }) {
+// 星星：沒按提示、最多說錯一次（語音辨識難免聽錯）就 +1；跳過 −1
+// 說錯時畫面會自動多給提示，但那不算玩家自己看提示
+function recordResult(choice, { peeked, attempts, skipped }) {
   const phraseId = choice.phrase;
   const before = mastery(phraseId);
   let after = before;
-  if (skipped || hint >= 3) after = Math.max(0, before - 1);
-  else if (hint === 0 && attempts === 0) after = Math.min(MAX_MASTERY, before + 1);
+  let why;
+  if (skipped) { after = Math.max(0, before - 1); why = 'skipped'; }
+  else if (peeked) why = 'peeked';
+  else if (attempts > 1) why = 'attempts';
+  else if (before >= MAX_MASTERY) why = 'max';
+  else after = before + 1;
   save.mastery[phraseId] = after;
-  cur.gains[phraseId] = { before: cur.gains[phraseId]?.before ?? before, after };
-  // 數值：不看提示一次說對 4，有用提示或說錯過 3，跳過 0
+  cur.gains[phraseId] = { before: cur.gains[phraseId]?.before ?? before, after, why, attempts };
+  // 數值：不看提示一次說對 4，看過提示或說錯過 3，跳過 0
   let gain = null;
   if (!skipped) {
     const skill = skillOf(choice);
-    gain = { skill, amount: addStat(skill, `p:${phraseId}`, hint === 0 && attempts === 0 ? 4 : 3) };
+    gain = { skill, amount: addStat(skill, `p:${phraseId}`, !peeked && attempts === 0 ? 4 : 3) };
   }
   persist();
   return gain;
@@ -813,6 +828,7 @@ const actions = {
     const t = cur.turn;
     t.chosen = Number(i);
     t.hint = 0;
+    t.peeked = 0;
     t.attempts = 0;
     t.feedback = '';
     render();
@@ -821,12 +837,12 @@ const actions = {
   showChoices() { const t = cur.turn; t.free = false; t.chosen = t.choices.length === 1 && !t.locked.length ? 0 : null; render(); },
   say() { const t = cur.turn; speak(PHRASES[t.choices[t.chosen].phrase].ja, { rate: 0.9 }); },
   saySlow() { const t = cur.turn; speak(PHRASES[t.choices[t.chosen].phrase].ja, { rate: 0.6 }); },
-  hint() { cur.turn.hint = Math.min(3, cur.turn.hint + 1); render(); },
+  hint() { cur.turn.hint = Math.min(3, cur.turn.hint + 1); cur.turn.peeked++; render(); },
   mic() { toggleMic(); },
   skip() {
     const t = cur.turn;
     const c = t.choices[t.chosen ?? 0];
-    recordResult(c, { hint: 3, attempts: t.attempts, skipped: true });
+    recordResult(c, { peeked: t.peeked, attempts: t.attempts, skipped: true });
     // 跳過只保留劇情旗標，拿不到獎勵
     if (c.flag) { save.flags[c.flag] = save.day; persist(); }
     goto(c.next);
