@@ -41,6 +41,42 @@ let bookOpen = false;
 let toast = '';
 let events = [];     // 等著顯示的事件結果
 
+// ---------- 素材（assets/ 資料夾裡的圖片和影片） ----------
+// 開始時先檢查哪些檔案存在：有圖就顯示圖，沒有就維持 emoji 和漸層背景
+const ASSET_DIR = 'assets/';
+const FACES = ['normal', 'smile', 'shy', 'surprised', 'confused'];
+const IMG_EXT = ['.jpg', '.png', '.webp'];
+const assets = new Set();
+const assetFound = list => list.find(n => assets.has(n));
+
+const probe = names => Promise.all([...new Set(names)].map(n => fetch(ASSET_DIR + n, { method: 'HEAD', cache: 'no-store' })
+  .then(r => { if (r.ok) assets.add(n); }).catch(() => {})));
+
+async function probeAssets() {
+  const imgs = new Set(QUESTS.flatMap(q => Object.values(q.cast).map(c => c.img)).filter(Boolean));
+  const first = [...imgs].flatMap(img => [`${img}.png`, `${img}_normal.png`]);
+  for (const q of QUESTS) {
+    if (q.bgImg) first.push(...IMG_EXT.map(ext => q.bgImg + ext));
+    for (const n of Object.values(q.nodes)) if (n.cg) first.push(...['.mp4', ...IMG_EXT].map(ext => n.cg + ext));
+  }
+  await probe(first);
+  // 有基本立繪的角色，才去找其他表情（避免一堆找不到檔案的請求）
+  await probe([...imgs].filter(img => assets.has(`${img}.png`) || assets.has(`${img}_normal.png`))
+    .flatMap(img => FACES.slice(1).map(f => `${img}_${f}.png`)));
+  if (assets.size) render();
+}
+
+const portraitOf = (who, face) => who.img && assetFound([`${who.img}_${face}.png`, `${who.img}_normal.png`, `${who.img}.png`]);
+const bgOf = q => q.bgImg && assetFound(IMG_EXT.map(ext => q.bgImg + ext));
+
+// 事件大圖：有 .mp4 就靜音循環播放（同名圖片當作載入前的畫面）
+function viewCg(name) {
+  const video = assetFound([`${name}.mp4`]);
+  const still = assetFound(IMG_EXT.map(ext => name + ext));
+  if (video) return `<video class="cg" src="${ASSET_DIR + video}" ${still ? `poster="${ASSET_DIR + still}"` : ''} autoplay muted loop playsinline></video>`;
+  return still ? `<img class="cg" src="${ASSET_DIR + still}" alt="">` : '';
+}
+
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const mastery = id => save.mastery[id] ?? 0;
 const listenLevel = concept => save.listen[concept] ?? 0;
@@ -179,10 +215,16 @@ function viewScene() {
   const npc = node.npc;
   const talking = npc ? quest.cast[npc.who] : null;
   const speaker = talking || speakerOf();
-  return `<main class="page scene ${quest.dark ? 'dark' : ''}" style="--scene-bg:${quest.bg}">
+  const bg = bgOf(quest);
+  const cg = node.cg && viewCg(node.cg);
+  const portrait = portraitOf(speaker, cur.face);
+  return `<main class="page scene ${quest.dark ? 'dark' : ''} ${bg ? 'has-img' : ''}"
+      style="--scene-bg:${bg ? `url('${new URL(ASSET_DIR + bg, location.href)}') center / cover no-repeat, ` : ''}${quest.bg}">
     ${topbar(`${quest.emoji} ${esc(quest.title)}`, 'leave')}
     <div class="stage">
-      <div class="avatar ${talking ? 'talking' : ''}">${speaker.emoji}</div>
+      ${cg || (portrait
+        ? `<img class="portrait ${talking ? 'talking' : ''}" src="${ASSET_DIR + portrait}" alt="${esc(speaker.name)}">`
+        : `<div class="avatar ${talking ? 'talking' : ''}">${speaker.emoji}</div>`)}
       <div class="who">${esc(speaker.name)}</div>
     </div>
     ${node.narr ? `<p class="narr">${esc(node.narr)}</p>` : ''}
@@ -426,6 +468,7 @@ function goto(id) {
   cur.node = node;
   cur.turn = null;
   cur.subRevealed = false;
+  cur.face = node.npc?.face || 'normal';
   cur.quiz = null;
   if (node.end) return finishQuest(node);
   if (node.npc) {
@@ -639,6 +682,7 @@ function handleAnswer(alternatives) {
       ? `你說「${esc(r.heard)}」<br>${esc(who.name)}：「${ja}」（${zh}）<br>提示多給你一點，再試一次。（⚡ −2）`
       : '沒聽清楚，再試一次？';
     t.fbType = 'warn';
+    if (r.heard) cur.face = 'confused';
     if (t.chosen === null) { t.free = false; t.feedback += ' 先選一個想表達的意思吧。'; }
     render();
     if (r.heard) speak(ja, { pitch: who.pitch });
@@ -659,6 +703,7 @@ function handleAnswer(alternatives) {
   t.switched = t.chosen !== null && r.idx !== t.chosen;
   t.statGain = recordResult(t.choices[r.idx], t);
   t.result = r;
+  cur.face = 'smile';
   render();
 }
 
@@ -804,3 +849,4 @@ app.addEventListener('submit', e => {
 if (ttsSupported) speechSynthesis.addEventListener?.('voiceschanged', () => { if (screen === 'title') render(); });
 
 render();
+probeAssets();

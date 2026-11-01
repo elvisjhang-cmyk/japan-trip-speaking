@@ -128,12 +128,15 @@ export const TIMES = [
 export const TRIP = { days: 5, lastDaySlots: 2, money: 30000, stamina: 100, rest: 40 };
 
 // QUESTS：可以排進行程的地點
+//   bgImg    背景圖（assets/ 裡的檔名，不含副檔名）；cast 的 img 是角色立繪的檔名開頭
 //   times    開放的時段；cost 花費（日圓，結束時扣，end 節點可用 cost 覆蓋）；stamina 消耗體力
 //   skill    說出口的句子算進哪個數值（cast 角色或 choice 也可以各自指定 skill）
 //   requires 需要的旗標（去過某地點會自動留下 'quest:地點id'）；nextDay 旗標要等到隔天才生效；once 整趟旅程只能去一次
 //   hidden   解鎖之前不顯示；day 只有那一天能去；lockedDesc / waitDesc 鎖住時、已約好但還沒到時的說明
 // 節點：
 //   narr     旁白（中文）
+//   cg       事件大圖（assets/ 裡的檔名，不含副檔名；有 .mp4 會播影片）
+//   npc.face 角色表情：normal / smile / shy / surprised / confused（沒有那張圖就用 normal）
 //   npc      NPC 台詞 { who, ja, kana, zh, concept, keys, alt, quiz }
 //            concept 相同的台詞第二次出現時不顯示字幕，改成聽力題（「對方剛剛說的是？」）
 //            keys  聽力關鍵詞 [['日文', '中文']]，顯示字幕時一起教
@@ -150,8 +153,8 @@ export const QUESTS = [
   {
     id: 'konbini', times: ['am', 'pm', 'night'], cost: 780, stamina: 15, skill: 'shop', emoji: '🏪', title: '便利商店買早餐',
     desc: '肚子餓了，去飯店樓下的便利商店買飯糰和便當。',
-    bg: 'linear-gradient(160deg,#e3f6e8,#a9dfc0)',
-    cast: { clerk: { name: '店員', emoji: '🧑‍💼', pitch: 1.1 } },
+    bg: 'linear-gradient(160deg,#e3f6e8,#a9dfc0)', bgImg: 'bg_konbini',
+    cast: { clerk: { name: '店員', emoji: '🧑‍💼', pitch: 1.1, img: 'npc_konbini' } },
     start: 's',
     nodes: {
       s:  { narr: '你拿了一個飯糰和一個便當，走到櫃台。', next: 'n1' },
@@ -199,8 +202,8 @@ export const QUESTS = [
   {
     id: 'michi', times: ['am', 'pm'], cost: 0, stamina: 25, skill: 'road', emoji: '🚉', title: '問路去車站',
     desc: '想去淺草，Google Maps 卻突然沒網路……路邊有位阿姨看起來很親切。',
-    bg: 'linear-gradient(160deg,#e2efff,#b3cff3)',
-    cast: { obasan: { name: '路過的阿姨', emoji: '👵', pitch: 1.25 } },
+    bg: 'linear-gradient(160deg,#e2efff,#b3cff3)', bgImg: 'bg_michi',
+    cast: { obasan: { name: '路過的阿姨', emoji: '👵', pitch: 1.25, img: 'npc_obasan' } },
     start: 's',
     nodes: {
       s:  { narr: '先叫住阿姨吧。', choices: [{ zh: '不好意思（叫住對方）', phrase: 'sumimasen', hint: '日本最萬用的一句話', next: 'n2' }] },
@@ -232,11 +235,11 @@ export const QUESTS = [
   {
     id: 'ramen', times: ['night'], cost: 1100, stamina: 25, skill: 'food', emoji: '🍜', title: '巷子裡的拉麵店',
     desc: '聽說附近有一家只有當地人才知道的拉麵店。晚餐就決定是它了。',
-    bg: 'linear-gradient(160deg,#4a2e28,#9a4b32)',
+    bg: 'linear-gradient(160deg,#4a2e28,#9a4b32)', bgImg: 'bg_ramen',
     dark: true,
     cast: {
-      master: { name: '老闆', emoji: '👨‍🍳', pitch: 0.8 },
-      yui: { name: '結衣', emoji: '👩', pitch: 1.3, skill: 'chat' },
+      master: { name: '老闆', emoji: '👨‍🍳', pitch: 0.8, img: 'npc_ramen' },
+      yui: { name: '結衣', emoji: '👩', pitch: 1.3, skill: 'chat', img: 'yui' },
     },
     start: 's',
     nodes: {
@@ -257,7 +260,7 @@ export const QUESTS = [
               { zh: '是的，第一次來日本', phrase: 'hajimete', hint: '「是」＋「第一次」', affection: 1, next: 'n6' },
               { zh: '嗯，來玩的', phrase: 'asobi', hint: '「玩」＋「に来た」', next: 'n6' },
               { zh: '不是', phrase: 'iie', hint: '最簡單的否定', affection: -1, next: 'n6' }] },
-      n6: { npc: { who: 'yui', ja: 'わたし、結衣です。このラーメン、おいしいですよ。', kana: 'わたし、ゆいです。このらーめん、おいしいですよ。', zh: '我叫結衣。這家的拉麵很好吃喔。', concept: 'yui_intro',
+      n6: { npc: { who: 'yui', ja: 'わたし、結衣です。このラーメン、おいしいですよ。', kana: 'わたし、ゆいです。このらーめん、おいしいですよ。', zh: '我叫結衣。這家的拉麵很好吃喔。', concept: 'yui_intro', face: 'smile',
                    keys: [['結衣', '結衣（她的名字）'], ['おいしいですよ', '很好吃喔']] },
             choices: [
               { zh: '看起來很好吃', phrase: 'oishisou', hint: '「好吃」＋「看起來」', affection: 1, next: 'n7' },
@@ -274,9 +277,9 @@ export const QUESTS = [
               { zh: '好啊，一起去', phrase: 'ikimashou', hint: '「好耶」＋「一起去吧」', flag: 'yui_yes', affection: 1, next: 'n10' },
               { zh: '可以啊', phrase: 'iidesuyo', hint: '「可以喔」', flag: 'yui_yes', next: 'n10' },
               { zh: '明天可能有點忙', phrase: 'chotto', hint: '日本人婉拒時常說「明天有點……」', affection: -1, next: 'n10b' }] },
-      n10: { npc: { who: 'yui', ja: 'やった！ じゃあ、明日の七時に、神社の前で。', kana: 'やった！ じゃあ、あしたのしちじに、じんじゃのまえで。', zh: '太好了！那明天七點，神社前面見。', concept: 'yakusoku',
+      n10: { npc: { who: 'yui', ja: 'やった！ じゃあ、明日の七時に、神社の前で。', kana: 'やった！ じゃあ、あしたのしちじに、じんじゃのまえで。', zh: '太好了！那明天七點，神社前面見。', concept: 'yakusoku', face: 'smile',
                     keys: [['七時', '七點'], ['神社の前で', '在神社前面']] }, next: 'n11' },
-      n10b: { npc: { who: 'yui', ja: 'そっか、残念。じゃあ、またどこかで。', kana: 'そっか、ざんねん。じゃあ、またどこかで。', zh: '這樣啊，好可惜。那有緣再見囉。', concept: 'zannen' }, next: 'n11' },
+      n10b: { npc: { who: 'yui', ja: 'そっか、残念。じゃあ、またどこかで。', kana: 'そっか、ざんねん。じゃあ、またどこかで。', zh: '這樣啊，好可惜。那有緣再見囉。', concept: 'zannen', face: 'confused' }, next: 'n11' },
       n11: { narr: '碗快見底了。', choices: [
                { zh: '麻煩結帳', phrase: 'okaikei', hint: '「會計」＋「麻煩了」', next: 'n12' },
                { zh: '麻煩加麵', phrase: 'kaedama', need: { food: 25 }, hint: '加麵叫「替え玉」', stamina: 10, money: -150, next: 'n11k' }] },
@@ -293,8 +296,8 @@ export const QUESTS = [
   {
     id: 'cafe', times: ['am', 'pm'], cost: 550, stamina: 15, skill: 'food', emoji: '☕', title: '咖啡廳的早晨',
     desc: '找間咖啡廳坐一下，順便規劃接下來的行程。',
-    bg: 'linear-gradient(160deg,#f6e8d6,#ddb98f)',
-    cast: { staff: { name: '店員', emoji: '👩‍💼', pitch: 1.15 } },
+    bg: 'linear-gradient(160deg,#f6e8d6,#ddb98f)', bgImg: 'bg_cafe',
+    cast: { staff: { name: '店員', emoji: '👩‍💼', pitch: 1.15, img: 'npc_cafe' } },
     start: 'n1',
     nodes: {
       n1: { npc: { who: 'staff', ja: 'いらっしゃいませ。ご注文はお決まりですか？', kana: 'いらっしゃいませ。ごちゅうもんはおきまりですか？', zh: '歡迎光臨。決定好要點什麼了嗎？', concept: 'chuumon',
@@ -330,8 +333,8 @@ export const QUESTS = [
   {
     id: 'omiyage', times: ['pm'], cost: 1200, stamina: 20, skill: 'shop', emoji: '🎁', title: '挑伴手禮',
     desc: '幫同事和家人買點伴手禮吧。',
-    bg: 'linear-gradient(160deg,#fde6ea,#f0b3c1)',
-    cast: { staff: { name: '店員', emoji: '🧑', pitch: 1.0 } },
+    bg: 'linear-gradient(160deg,#fde6ea,#f0b3c1)', bgImg: 'bg_omiyage',
+    cast: { staff: { name: '店員', emoji: '🧑', pitch: 1.0, img: 'npc_omiyage' } },
     start: 'g',
     nodes: {
       // 聽力夠才聽得懂「可以試吃」
@@ -382,21 +385,21 @@ export const QUESTS = [
     lockedDesc: '好像錯過了什麼邀請……（晚上去「巷子裡的拉麵店」看看）',
     waitDesc: '約好了，明天晚上七點神社前見！',
     requires: 'yui_yes',
-    bg: 'linear-gradient(160deg,#232646,#5b2d63)',
+    bg: 'linear-gradient(160deg,#232646,#5b2d63)', bgImg: 'bg_matsuri',
     dark: true,
     cast: {
-      yui: { name: '結衣', emoji: '👘', pitch: 1.3, skill: 'chat' },
-      oji: { name: '攤販大叔', emoji: '👨', pitch: 0.8, skill: 'food' },
+      yui: { name: '結衣', emoji: '👘', pitch: 1.3, skill: 'chat', img: 'yui_yukata' },
+      oji: { name: '攤販大叔', emoji: '👨', pitch: 0.8, skill: 'food', img: 'npc_yatai' },
     },
     start: 's',
     nodes: {
       s:  { narr: '神社前掛滿了燈籠。穿著浴衣的結衣向你揮手。', next: 'n2' },
-      n2: { npc: { who: 'yui', ja: 'こんばんは！ 来てくれて、ありがとう。', kana: 'こんばんは！ きてくれて、ありがとう。', zh: '晚安！謝謝你來。', concept: 'kitekurete' },
+      n2: { npc: { who: 'yui', ja: 'こんばんは！ 来てくれて、ありがとう。', kana: 'こんばんは！ きてくれて、ありがとう。', zh: '晚安！謝謝你來。', concept: 'kitekurete', face: 'smile' },
             choices: [{ zh: '晚安！', phrase: 'konbanwa', hint: '結衣昨天見面時說的第一句話', next: 'n2b' }] },
       n2b: { narr: '結衣穿著深藍色的浴衣，身後的燈籠一路延伸到神社。', choices: [
                { zh: '好漂亮呢（燈籠）', phrase: 'kirei', hint: '「漂亮」＋「呢」', next: 'n3' },
                { zh: '浴衣很適合妳呢', phrase: 'yukata', need: { chat: 30 }, hint: '「浴衣」＋「很適合」＋「呢」', affection: 1, next: 'n2y' }] },
-      n2y: { npc: { who: 'yui', ja: 'え、本当ですか？ ……ありがとう。ちょっと恥ずかしいな。', kana: 'え、ほんとうですか？ ……ありがとう。ちょっとはずかしいな。', zh: '欸，真的嗎？……謝謝。有點害羞呢。', concept: 'hazukashii',
+      n2y: { npc: { who: 'yui', ja: 'え、本当ですか？ ……ありがとう。ちょっと恥ずかしいな。', kana: 'え、ほんとうですか？ ……ありがとう。ちょっとはずかしいな。', zh: '欸，真的嗎？……謝謝。有點害羞呢。', concept: 'hazukashii', face: 'shy',
                     keys: [['本当', '真的'], ['恥ずかしい', '害羞']] }, next: 'n3' },
       n3: { npc: { who: 'yui', ja: '何か食べたいもの、ありますか？ たこ焼きとか、焼きそばとか。', kana: 'なにかたべたいもの、ありますか？ たこやきとか、やきそばとか。', zh: '有什麼想吃的嗎？像是章魚燒、炒麵之類的。', concept: 'tabetai' },
             choices: [
@@ -416,13 +419,13 @@ export const QUESTS = [
               { zh: '很喜歡', phrase: 'daisuki', hint: '「很喜歡」是一個詞', affection: 1, next: 'n9' },
               { zh: '還可以', phrase: 'maamaa', hint: '「馬馬虎虎」', next: 'n9' },
               { zh: '不太喜歡', phrase: 'amari', hint: '「不太」＋「喜歡＋不是」', affection: -1, next: 'n9' }] },
-      n9: { narr: '遠處傳來「咻——」的聲音，夜空亮了起來。', next: 'n10' },
-      n10: { npc: { who: 'yui', ja: 'あ、花火！ ……きれいですね。', kana: 'あ、はなび！ ……きれいですね。', zh: '啊，煙火！……好漂亮啊。', concept: 'hanabi',
+      n9: { narr: '遠處傳來「咻——」的聲音，夜空亮了起來。', cg: 'cg_fireworks', next: 'n10' },
+      n10: { npc: { who: 'yui', ja: 'あ、花火！ ……きれいですね。', kana: 'あ、はなび！ ……きれいですね。', zh: '啊，煙火！……好漂亮啊。', concept: 'hanabi', cg: 'cg_fireworks',
                     keys: [['花火', '煙火'], ['きれい', '漂亮']] },
              choices: [
                { zh: '真的很漂亮', phrase: 'hontou_kirei', hint: '「真的」＋「漂亮」', affection: 1, next: 'n11' },
                { zh: '嗯，很漂亮', phrase: 'un_kirei', hint: '「嗯」＋「漂亮」', next: 'n11' }] },
-      n11: { npc: { who: 'yui', ja: '……ねえ、また日本に来ますか？', kana: '……ねえ、またにほんにきますか？', zh: '……吶，你還會再來日本嗎？', concept: 'mata',
+      n11: { npc: { who: 'yui', ja: '……ねえ、また日本に来ますか？', kana: '……ねえ、またにほんにきますか？', zh: '……吶，你還會再來日本嗎？', concept: 'mata', cg: 'cg_fireworks', face: 'shy',
                     keys: [['また', '再'], ['来ますか', '會來嗎']] },
              choices: [
                { zh: '會再來的', phrase: 'mata_kuru', hint: '「再」＋「來」', affection: 1, next: 'end' },
@@ -434,8 +437,8 @@ export const QUESTS = [
   {
     id: 'drugstore', times: ['pm'], cost: 5500, stamina: 25, skill: 'shop', emoji: '💊', title: '藥妝店大採購',
     desc: '想買眼藥水和防曬乳，可是架上的商品多到看不懂。',
-    bg: 'linear-gradient(160deg,#e9f4ff,#bfe0f5)',
-    cast: { staff: { name: '店員', emoji: '👩‍⚕️', pitch: 1.15 } },
+    bg: 'linear-gradient(160deg,#e9f4ff,#bfe0f5)', bgImg: 'bg_drugstore',
+    cast: { staff: { name: '店員', emoji: '👩‍⚕️', pitch: 1.15, img: 'npc_drugstore' } },
     start: 's',
     nodes: {
       s:  { narr: '架上全是看不懂的包裝，問問店員吧。', choices: [{ zh: '不好意思（叫住店員）', phrase: 'sumimasen', hint: '叫住別人的萬用句', next: 'n2' }] },
@@ -469,11 +472,11 @@ export const QUESTS = [
   {
     id: 'izakaya', times: ['night'], cost: 3000, stamina: 30, skill: 'food', emoji: '🏮', title: '熱鬧的居酒屋',
     desc: '紅燈籠下的小居酒屋，聽說常有當地上班族來喝一杯。',
-    bg: 'linear-gradient(160deg,#3b1f1a,#a3402c)',
+    bg: 'linear-gradient(160deg,#3b1f1a,#a3402c)', bgImg: 'bg_izakaya',
     dark: true,
     cast: {
-      staff: { name: '店員', emoji: '🧑‍🍳', pitch: 1.05 },
-      oji: { name: '隔壁的大叔', emoji: '🧔', pitch: 0.8, skill: 'chat' },
+      staff: { name: '店員', emoji: '🧑‍🍳', pitch: 1.05, img: 'npc_izakaya' },
+      oji: { name: '隔壁的大叔', emoji: '🧔', pitch: 0.8, skill: 'chat', img: 'npc_salaryman' },
     },
     start: 's',
     nodes: {
@@ -521,8 +524,8 @@ export const QUESTS = [
     id: 'yui_cafe', times: ['pm'], cost: 600, stamina: 15, skill: 'chat', once: true, hidden: true,
     requires: 'quest:matsuri', nextDay: true, emoji: '☕', title: '和結衣喝咖啡',
     desc: '結衣今天提早下班，想帶你去她常去的咖啡廳。',
-    bg: 'linear-gradient(160deg,#f3e3d3,#d6a985)',
-    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    bg: 'linear-gradient(160deg,#f3e3d3,#d6a985)', bgImg: 'bg_cafe',
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3, img: 'yui' } },
     start: 's',
     nodes: {
       s:  { narr: '你們坐在靠窗的位子。結衣點了熱可可，看起來比前兩天放鬆一些。', next: 'n1' },
@@ -537,7 +540,7 @@ export const QUESTS = [
               { zh: '辛苦了', phrase: 'otsukare', hint: '日本人對工作的人最常說的一句', affection: 1, next: 'n3' },
               { zh: '這樣啊', phrase: 'soudesuka', hint: '最基本的附和', next: 'n3' },
               { zh: '工作很累嗎？', phrase: 'taihen', need: { chat: 30 }, hint: '「工作」＋「辛苦嗎」', affection: 1, next: 'n2t' }] },
-      n2t: { npc: { who: 'yui', ja: 'はい、ちょっと。でも、今日は話せてうれしいです。', kana: 'はい、ちょっと。でも、きょうははなせてうれしいです。', zh: '嗯，有一點。不過，今天能跟你聊天很開心。', concept: 'hanasete',
+      n2t: { npc: { who: 'yui', ja: 'はい、ちょっと。でも、今日は話せてうれしいです。', kana: 'はい、ちょっと。でも、きょうははなせてうれしいです。', zh: '嗯，有一點。不過，今天能跟你聊天很開心。', concept: 'hanasete', face: 'smile',
                     keys: [['でも', '不過'], ['話せて', '能聊天'], ['うれしい', '開心']] }, next: 'n3' },
       n3: { npc: { who: 'yui', ja: 'あのラーメン屋、残業の後によく行くんです。スープが好きで。', kana: 'あのらーめんや、ざんぎょうのあとによくいくんです。すーぷがすきで。', zh: '那家拉麵店，我加班後常去。因為喜歡那個湯頭。', concept: 'zangyou',
                    keys: [['残業の後', '加班之後'], ['よく行く', '常去']] },
@@ -545,7 +548,7 @@ export const QUESTS = [
               { zh: '原來如此', phrase: 'naruhodo', hint: '恍然大悟時說的', affection: 1, next: 'n4' },
               { zh: '嗯', phrase: 'un', hint: '最短的附和', next: 'n4' },
               { zh: '下次也一起去吧', phrase: 'tsugimo', need: { chat: 40 }, hint: '「下次也」＋「一起」＋「去吧」', affection: 1, next: 'n3t' }] },
-      n3t: { npc: { who: 'yui', ja: 'え……はい、ぜひ！', kana: 'え……はい、ぜひ！', zh: '欸……好，一定！', concept: 'zehi',
+      n3t: { npc: { who: 'yui', ja: 'え……はい、ぜひ！', kana: 'え……はい、ぜひ！', zh: '欸……好，一定！', concept: 'zehi', face: 'surprised',
                     keys: [['ぜひ', '一定（很樂意）']] }, next: 'n4' },
       n4: { npc: { who: 'yui', ja: 'あ、明日の夜、わたしの好きな居酒屋に行きませんか？', kana: 'あ、あしたのよる、わたしのすきないざかやにいきませんか？', zh: '啊，明天晚上，要不要去我喜歡的居酒屋？', concept: 'izakaya_invite',
                    keys: [['居酒屋', '居酒屋'], ['行きませんか', '要不要去']] },
@@ -557,9 +560,9 @@ export const QUESTS = [
     id: 'yui_izakaya', times: ['night'], cost: 2500, stamina: 25, skill: 'chat', once: true, hidden: true,
     requires: 'quest:yui_cafe', nextDay: true, emoji: '🍶', title: '和結衣去居酒屋',
     desc: '結衣下班後，帶你去她喜歡的小居酒屋。',
-    bg: 'linear-gradient(160deg,#2b1d2e,#7a3b3b)',
+    bg: 'linear-gradient(160deg,#2b1d2e,#7a3b3b)', bgImg: 'bg_izakaya',
     dark: true,
-    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3, img: 'yui' } },
     start: 's',
     nodes: {
       s:  { narr: '店裡燈光溫暖，結衣點了幾樣下酒菜。她看起來比前幾天更願意多聊一點。', next: 'n1' },
@@ -575,15 +578,15 @@ export const QUESTS = [
               { zh: '我也喜歡拍照', phrase: 'watashimo_suki', hint: '「我也」＋「喜歡」', affection: 1, next: 'n3' },
               { zh: '這樣啊', phrase: 'soudesuka', hint: '最基本的附和', next: 'n3' },
               { zh: '下次給我看妳拍的照片', phrase: 'shashin', need: { chat: 40 }, hint: '「下次」＋「照片」＋「給我看」', affection: 1, next: 'n2t' }] },
-      n2t: { npc: { who: 'yui', ja: 'じゃあ、今見せますね。これ、お祭りの日の花火です。', kana: 'じゃあ、いまみせますね。これ、おまつりのひのはなびです。', zh: '那現在就給你看。這是祭典那天的煙火。', concept: 'misemasu',
+      n2t: { npc: { who: 'yui', ja: 'じゃあ、今見せますね。これ、お祭りの日の花火です。', kana: 'じゃあ、いまみせますね。これ、おまつりのひのはなびです。', zh: '那現在就給你看。這是祭典那天的煙火。', concept: 'misemasu', face: 'smile',
                     keys: [['今見せますね', '現在給你看'], ['お祭りの日', '祭典那天']] }, next: 'n3' },
-      n3: { npc: { who: 'yui', ja: 'こうやって話せるの、……ちょっと、うれしいです。', kana: 'こうやってはなせるの、……ちょっと、うれしいです。', zh: '能像這樣聊天，……有點開心。', concept: 'ureshii',
+      n3: { npc: { who: 'yui', ja: 'こうやって話せるの、……ちょっと、うれしいです。', kana: 'こうやってはなせるの、……ちょっと、うれしいです。', zh: '能像這樣聊天，……有點開心。', concept: 'ureshii', face: 'shy',
                    keys: [['こうやって', '像這樣'], ['うれしい', '開心']] },
             choices: [
               { zh: '謝謝', phrase: 'arigatou', hint: '最基本的謝謝', affection: 1, next: 'end' },
               { zh: '嗯', phrase: 'un', hint: '最短的附和', next: 'end' },
               { zh: '我也是，跟妳在一起很開心', phrase: 'tanoshii', need: { chat: 50 }, hint: '「我也是」＋「在一起的話」＋「開心」', affection: 1, next: 'n3t' }] },
-      n3t: { npc: { who: 'yui', ja: '……わたしもです。', kana: '……わたしもです。', zh: '……我也是。', concept: 'watashimo_yui' }, next: 'end' },
+      n3t: { npc: { who: 'yui', ja: '……わたしもです。', kana: '……わたしもです。', zh: '……我也是。', concept: 'watashimo_yui', face: 'shy' }, next: 'end' },
       end: { end: true, narr: '回去的路上，結衣小聲說：「明日、駅まで見送りに行きますね。」（明天我去車站送你。）' },
     },
   },
@@ -591,8 +594,8 @@ export const QUESTS = [
     id: 'farewell', times: ['pm'], day: 5, cost: 0, stamina: 0, skill: 'chat', once: true, hidden: true,
     requires: 'quest:matsuri', emoji: '🚉', title: '車站的告別',
     desc: '要離開東京了。結衣特地來車站送你。',
-    bg: 'linear-gradient(160deg,#dfe6f0,#9fb3cc)',
-    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3 } },
+    bg: 'linear-gradient(160deg,#dfe6f0,#9fb3cc)', bgImg: 'bg_station',
+    cast: { yui: { name: '結衣', emoji: '👩', pitch: 1.3, img: 'yui' } },
     start: 's',
     nodes: {
       s:  { narr: '月台上人來人往。結衣站在剪票口前，看到你就小跑步過來。', next: 'n1' },
@@ -602,7 +605,7 @@ export const QUESTS = [
               { zh: '一定會再見面的', phrase: 'kanarazu', hint: '「一定」＋「再」＋「見面吧」', affection: 1, next: 'n2' },
               { zh: '希望能再見面', phrase: 'aitai', hint: '「再」＋「見面」＋「想要」', affection: 1, next: 'n2' },
               { zh: '不知道', phrase: 'wakarimasen', hint: '「知道」的否定', next: 'n2' }] },
-      n2: { npc: { who: 'yui', ja: '……ありがとう。', kana: '……ありがとう。', zh: '……謝謝你。', concept: 'arigatou_yui' },
+      n2: { npc: { who: 'yui', ja: '……ありがとう。', kana: '……ありがとう。', zh: '……謝謝你。', concept: 'arigatou_yui', cg: 'cg_farewell' },
             choices: [
               { zh: '下次再一起吃拉麵吧', phrase: 'ramen_mata', hint: '「下次也」＋「一起」＋「拉麵」＋「吃吧」', affection: 1, next: 'route' },
               { zh: '謝謝妳這幾天的陪伴', phrase: 'kono_suujitsu', hint: '「這幾天」＋「謝謝」', next: 'route' },
@@ -613,13 +616,13 @@ export const QUESTS = [
         { when: s => s.flags.confess, next: 'r_soft' },
         { when: s => s.affection >= 5, next: 'r_promise' },
         { next: 'r_friend' }] },
-      r_love: { npc: { who: 'yui', ja: '……わたしも、少し好きです。また会いましょう。', kana: '……わたしも、すこしすきです。またあいましょう。', zh: '……我也有一點喜歡你。我們再見面吧。', concept: 'r_love',
+      r_love: { npc: { who: 'yui', ja: '……わたしも、少し好きです。また会いましょう。', kana: '……わたしも、すこしすきです。またあいましょう。', zh: '……我也有一點喜歡你。我們再見面吧。', concept: 'r_love', face: 'shy', cg: 'cg_farewell',
                        keys: [['少し', '一點'], ['好きです', '喜歡'], ['会いましょう', '見面吧']] }, next: 'end_love' },
-      r_soft: { npc: { who: 'yui', ja: 'え……ありがとう。次に会うとき、もっとゆっくり話しましょう。', kana: 'え……ありがとう。つぎにあうとき、もっとゆっくりはなしましょう。', zh: '欸……謝謝。下次見面時，再慢慢聊吧。', concept: 'r_soft',
+      r_soft: { npc: { who: 'yui', ja: 'え……ありがとう。次に会うとき、もっとゆっくり話しましょう。', kana: 'え……ありがとう。つぎにあうとき、もっとゆっくりはなしましょう。', zh: '欸……謝謝。下次見面時，再慢慢聊吧。', concept: 'r_soft', face: 'surprised',
                        keys: [['次に会うとき', '下次見面時'], ['ゆっくり', '慢慢地']] }, next: 'end' },
-      r_promise: { npc: { who: 'yui', ja: 'うん、約束です。次はわたしが案内します。', kana: 'うん、やくそくです。つぎはわたしがあんないします。', zh: '嗯，說好了。下次我來帶路。', concept: 'r_promise',
+      r_promise: { npc: { who: 'yui', ja: 'うん、約束です。次はわたしが案内します。', kana: 'うん、やくそくです。つぎはわたしがあんないします。', zh: '嗯，說好了。下次我來帶路。', concept: 'r_promise', face: 'smile', cg: 'cg_farewell',
                           keys: [['約束', '約定'], ['案内します', '帶路']] }, next: 'end' },
-      r_friend: { npc: { who: 'yui', ja: 'もしまた日本に来たら、またラーメン食べましょうね。', kana: 'もしまたにほんにきたら、またらーめんたべましょうね。', zh: '如果再來日本的話，再一起吃拉麵吧。', concept: 'r_friend',
+      r_friend: { npc: { who: 'yui', ja: 'もしまた日本に来たら、またラーメン食べましょうね。', kana: 'もしまたにほんにきたら、またらーめんたべましょうね。', zh: '如果再來日本的話，再一起吃拉麵吧。', concept: 'r_friend', face: 'smile', cg: 'cg_farewell',
                          keys: [['もし', '如果'], ['来たら', '來的話']] }, next: 'end' },
       end_love: { end: true, narr: '電車門關上前，結衣紅著臉揮手。這趟旅程，你帶走的不只是伴手禮。' },
       end: { end: true, narr: '電車開動了。窗外的結衣一直揮手，直到看不見為止。' },

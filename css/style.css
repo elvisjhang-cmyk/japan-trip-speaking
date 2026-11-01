@@ -288,3 +288,21 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .meanings span.locked { background: var(--line); color: var(--muted); }
 .gain.bonus { color: var(--accent); }
 .quest.date { border-color: #e78fa8; background: linear-gradient(90deg, rgba(231, 143, 168, .12), transparent 60%), var(--card); }
+
+/* ---------- 素材：立繪、背景圖、事件大圖 ---------- */
+.portrait {
+  display: block; margin: 0 auto; height: min(36vh, 320px); max-width: 100%; object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .25));
+}
+.portrait.talking { animation: bob 1.6s ease-in-out infinite; }
+.cg {
+  display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: var(--radius); box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
+.has-img .topbar { background: rgba(255, 255, 255, .55); backdrop-filter: blur(8px); border-radius: 0 0 14px 14px; padding: 10px 8px; }
+.has-img.dark .topbar { background: rgba(0, 0, 0, .35); }
+.has-img .who, .has-img .narr {
+  display: table; margin-left: auto; margin-right: auto; padding: 2px 12px; border-radius: 999px;
+  background: rgba(0, 0, 0, .45); color: #fff;
+}
+.has-img .narr { border-radius: 12px; padding: 6px 12px; }
