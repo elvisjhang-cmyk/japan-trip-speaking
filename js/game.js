@@ -57,7 +57,10 @@ async function probeAssets() {
   const first = [...imgs].flatMap(img => [`${img}.png`, `${img}_normal.png`]);
   for (const q of QUESTS) {
     if (q.bgImg) first.push(...IMG_EXT.map(ext => q.bgImg + ext));
-    for (const n of Object.values(q.nodes)) if (n.cg) first.push(...['.mp4', ...IMG_EXT].map(ext => n.cg + ext));
+    for (const n of Object.values(q.nodes)) {
+      const cg = n.cg || n.npc?.cg;
+      if (cg) first.push(...['.mp4', ...IMG_EXT].map(ext => cg + ext));
+    }
   }
   await probe(first);
   // 有基本立繪的角色，才去找其他表情（避免一堆找不到檔案的請求）
@@ -216,7 +219,8 @@ function viewScene() {
   const talking = npc ? quest.cast[npc.who] : null;
   const speaker = talking || speakerOf();
   const bg = bgOf(quest);
-  const cg = node.cg && viewCg(node.cg);
+  const cgName = node.cg || npc?.cg;
+  const cg = cgName && viewCg(cgName);
   const portrait = portraitOf(speaker, cur.face);
   return `<main class="page scene ${quest.dark ? 'dark' : ''} ${bg ? 'has-img' : ''}"
       style="--scene-bg:${bg ? `url('${new URL(ASSET_DIR + bg, location.href)}') center / cover no-repeat, ` : ''}${quest.bg}">
