@@ -1,7 +1,9 @@
 // 瀏覽器內建的語音合成（NPC 說話）與語音辨識（玩家開口）。
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-export const asrSupported = !!SR;
+// Brave 有語音辨識的介面，但關掉了背後的 Google 服務，一按就失敗（network 錯誤），所以當作不支援
+export const isBrave = !!navigator.brave;
+export const asrSupported = !!SR && !isBrave;
 export const ttsSupported = 'speechSynthesis' in window;
 
 let sysVoice = null;

@@ -3,7 +3,7 @@
 
 import { PHRASES, QUESTS, STATS, TIMES, TRIP, EVENTS, ENDINGS, META_REPEAT, CONFUSED, voiceOf } from './data.js';
 import { judge, normalize, unvoice } from './judge.js';
-import { speak, stopSpeaking, listen, asrSupported, ttsSupported, hasJaVoice } from './speech.js';
+import { speak, stopSpeaking, listen, asrSupported, ttsSupported, hasJaVoice, isBrave } from './speech.js';
 
 const SAVE_KEY = 'nihongo-trip-v3';
 const MAX_MASTERY = 4;
@@ -132,7 +132,7 @@ function viewTitle() {
       <p class="lead">你是第一次來日本的旅客。<br>排好每天的行程，開口說日文，看看這趟旅程會怎麼結束。</p>
     </div>
     <ul class="checks">
-      <li>${asrSupported ? '✅ 語音辨識可用' : '⚠️ 這個瀏覽器不支援語音辨識，會改用打字模式（建議用 Chrome）'}</li>
+      <li>${asrSupported ? '✅ 語音辨識可用' : isBrave ? '⚠️ Brave 瀏覽器關掉了語音辨識，要開口說請改用 Chrome、Edge 或 Safari（現在先用打字模式）' : '⚠️ 這個瀏覽器不支援語音辨識，會改用打字模式（建議用 Chrome、Edge 或 Safari）'}</li>
       <li>${!ttsSupported ? '⚠️ 不支援語音朗讀' : hasJaVoice() ? '✅ 日文語音可用' : '⚠️ 找不到日文語音，NPC 的發音可能不正確'}</li>
     </ul>
     <div class="actions">
@@ -233,9 +233,12 @@ function viewScene() {
   const cgName = node.cg || npc?.cg;
   const cg = cgName && viewCg(cgName);
   const portrait = portraitOf(speaker, cur.face);
+  const flash = cur.flash;
+  cur.flash = '';
   return `<main class="page scene ${quest.dark ? 'dark' : ''} ${bg ? 'has-img' : ''}"
       style="--scene-bg:${bg ? `url('${new URL(ASSET_DIR + bg, location.href)}') center / cover no-repeat, ` : ''}${quest.bg}">
     ${topbar(`${quest.emoji} ${esc(quest.title)}`, 'leave')}
+    ${flash ? `<p class="flash" role="status">${flash}</p>` : ''}
     <div class="stage">
       ${cg || (portrait
         ? `<img class="portrait ${talking ? 'talking' : ''}" src="${ASSET_DIR + portrait}" alt="${esc(speaker.name)}">`
@@ -279,7 +282,6 @@ function viewPanel() {
   const t = cur.turn;
   if (cur.quiz && cur.quiz.picked === null) return viewQuiz(cur.quiz);
   if (!t) return '<button class="btn primary wide" data-act="next">繼續 ▶</button>';
-  if (t.result) return viewSuccess(t);
   if (t.chosen === null && t.free) {
     return `<p class="prompt">✨ 這些句子你都練過了，直接用日文回答吧！</p>
       <p class="meanings">可以表達的意思：${t.choices.map(c => `<span>${esc(c.zh)}</span>`).join('')}
@@ -344,10 +346,12 @@ function viewFeedback(t) {
   return t.feedback ? `<p class="feedback ${t.fbType || ''}">${t.feedback}</p>` : '';
 }
 
+// 結算畫面上，星星沒有增加的原因
 const STAR_WHY = {
-  peeked: () => '這次按了 💡 提示，星星沒有增加。下次不按提示說對，就會 +1。',
-  attempts: g => `這次說錯了 ${g.attempts} 次，星星沒有增加。下次最多錯一次就說對，就會 +1。`,
-  max: () => '已經滿星了！',
+  peeked: () => '按了 💡 提示，這次星星沒有增加',
+  attempts: g => `說錯了 ${g.attempts} 次，這次星星沒有增加（最多錯一次）`,
+  skipped: () => '跳過了，星星 −1',
+  max: () => '已經滿星',
 };
 
 // 清濁音放寬才過關時，找出是哪個詞、哪個音說錯，給對應的發音提醒
@@ -373,28 +377,17 @@ function voicingTip(heard, p) {
   return '🗣️ 發音小提醒：有些清音、濁音（例如 か／が、と／ど）聽起來混在一起，這次先算你過。';
 }
 
-function viewSuccess(t) {
-  const c = t.choices[t.result.idx];
-  const p = PHRASES[c.phrase];
-  const g = cur.gains[c.phrase];
-  return `<div class="success">
-      <p class="ok">✅ 通じた！對方聽懂了</p>
-      <p class="heard">你說：「${esc(t.heard)}」</p>
-      ${t.switched ? `<p class="tip">你表達的是「${esc(c.zh)}」，劇情就照你說的走 👍</p>` : ''}
-      ${t.result.loose ? `<p class="tip">${voicingTip(t.heard, p)}</p>` : ''}
-      <p class="stars-line">${esc(p.ja)} <span class="stars">${stars(g.after)}</span></p>
-      <p class="star-why">${STAR_WHY[g.why]?.(g) ?? '⭐ 星星 +1！'}</p>
-      ${t.statGain ? `<p class="gain">${STATS[t.statGain.skill].emoji} ${STATS[t.statGain.skill].name} +${t.statGain.amount}</p>` : ''}
-      ${effectText(c) ? `<p class="gain bonus">${c.need ? '🔓 練好日文的獎勵：' : ''}${effectText(c)}</p>` : ''}
-      <button class="btn primary wide" data-act="advance">繼續 ▶</button>
-    </div>`;
-}
-
 function viewResult() {
   const rows = Object.entries(cur.gains).map(([id, g]) => {
     const p = PHRASES[id];
     const delta = g.after - g.before;
-    return `<li><div><b>${esc(p.ja)}</b><small>${esc(p.romaji)}・${esc(p.zh)}</small></div>
+    const notes = [
+      g.heard && g.heard !== p.ja ? `你說：「${esc(g.heard)}」` : '',
+      STAR_WHY[g.why]?.(g) || '',
+      g.tip || '',
+    ].filter(Boolean);
+    return `<li><div><b>${esc(p.ja)}</b><small>${esc(p.romaji)}・${esc(p.zh)}</small>
+        ${notes.map(n => `<p class="note">${n}</p>`).join('')}</div>
       <span class="stars">${stars(g.after)}</span><em class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${delta > 0 ? '↑' : delta < 0 ? '再練練' : '—'}</em></li>`;
   }).join('');
   const listenRows = Object.entries(cur.listenGains).map(([id, g]) => {
@@ -516,7 +509,8 @@ function goto(id) {
   cur.node = node;
   cur.turn = null;
   cur.subRevealed = false;
-  cur.face = node.npc?.face || 'normal';
+  cur.face = node.npc?.face || (cur.pleased ? 'smile' : 'normal');
+  cur.pleased = false;
   cur.quiz = null;
   if (node.end) return finishQuest(node);
   if (node.npc) {
@@ -754,11 +748,22 @@ function handleAnswer(alternatives) {
     render();
     return;
   }
-  t.switched = t.chosen !== null && r.idx !== t.chosen;
-  t.statGain = recordResult(t.choices[r.idx], t);
+  const c = t.choices[r.idx];
+  const statGain = recordResult(c, t);
+  const g = cur.gains[c.phrase];
+  if (r.loose) g.tip = voicingTip(r.heard, PHRASES[c.phrase]);
+  g.heard = r.heard;
   t.result = r;
-  cur.face = 'smile';
-  render();
+  // 說對了不用再按「繼續」：上方閃一下這句的成果，劇情直接接下去；評語留到這段結束的結算畫面
+  cur.flash = [
+    '✅ 通じた！',
+    g.after > g.before ? '⭐ +1' : '',
+    statGain ? `${STATS[statGain.skill].emoji} ${STATS[statGain.skill].name} +${statGain.amount}` : '',
+    effectText(c),
+  ].filter(Boolean).join('　');
+  cur.pleased = true;
+  applyChoice(c);
+  goto(c.next);
 }
 
 async function toggleMic() {
@@ -798,7 +803,7 @@ async function toggleMic() {
     } else if (err === 'no-speech') {
       t.feedback = '沒有聽到聲音，再試一次？';
     } else if (err === 'network') {
-      t.feedback = '語音辨識需要網路（Chrome 會把聲音送到 Google 辨識）。也可以先用打字回答。';
+      t.feedback = '連不上語音辨識服務。請確認有網路；如果是用 Brave、Firefox 或其他瀏覽器，請改用 Chrome、Edge 或 Safari。也可以先用打字回答。';
     } else {
       t.feedback = `語音辨識發生錯誤（${esc(err)}），可以先用打字回答。`;
     }
@@ -880,11 +885,6 @@ const actions = {
     recordResult(c, { peeked: t.peeked, attempts: t.attempts, skipped: true });
     // 跳過只保留劇情旗標，拿不到獎勵
     if (c.flag) { save.flags[c.flag] = save.day; persist(); }
-    goto(c.next);
-  },
-  advance() {
-    const c = cur.turn.choices[cur.turn.result.idx];
-    applyChoice(c);
     goto(c.next);
   },
 };
