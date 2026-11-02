@@ -73,15 +73,25 @@ export function normalize(text) {
   return expandLongVowels(s);
 }
 
-const has = (t, words) => words.some(w => t.includes(normalize(w)));
+// 清音、濁音不分：中文母語者的「カ」常被辨識成「ガ」、「ト」成「ド」、「パ」成「バ」，
+// 所以比對不到時，再把 が→か、だ→た、ば→ぱ 統一後比一次
+const UNVOICE = {};
+for (const [voiced, plain] of [['g', 'k'], ['d', 't'], ['b', 'p']]) {
+  [...ROWS[voiced]].forEach((ch, i) => { UNVOICE[ch] = ROWS[plain][i]; });
+}
+export const unvoice = s => s.replace(/[がぎぐげござだぢづでどばびぶべぼ]/g, ch => UNVOICE[ch] || ch);
+
+const has = (t, words, fold) => words.some(w => t.includes(fold(normalize(w))));
 
 // 回傳 null（意思不符）或 { complete }（意思正確；complete=false 表示只說了關鍵字，句子不完整）
-export function matchPhrase(text, phrase) {
-  const t = normalize(text);
+// loose=true 時不分清音、濁音
+export function matchPhrase(text, phrase, loose = false) {
+  const fold = loose ? unvoice : s => s;
+  const t = fold(normalize(text));
   if (!t) return null;
-  if (phrase.neg && has(t, phrase.neg)) return null;
-  if (!phrase.req.every(group => has(t, group))) return null;
-  return { complete: !phrase.full || phrase.full.every(group => has(t, group)) };
+  if (phrase.neg && has(t, phrase.neg, fold)) return null;
+  if (!phrase.req.every(group => has(t, group, fold))) return null;
+  return { complete: !phrase.full || phrase.full.every(group => has(t, group, fold)) };
 }
 
 // alternatives：語音辨識的多個候選結果（或打字的一句）
@@ -91,19 +101,22 @@ export function matchPhrase(text, phrase) {
 export function judge(alternatives, options, phrases, preferIdx = -1, metaPhrase = null) {
   const order = options.map((_, i) => i);
   if (preferIdx >= 0) order.sort((a, b) => (b === preferIdx) - (a === preferIdx));
-  // 完整句子優先；都不完整時，回傳第一個「意思對但不完整」的結果
+  // 先嚴格比對，都不符時才放寬清濁音（loose：結果會標記，讓畫面提醒發音）
+  // 優先順序：完整句子 > 放寬後的完整句子 > 意思對但不完整
   let partial = null;
-  for (const i of order) {
-    for (const alt of alternatives) {
-      const r = matchPhrase(alt, phrases[options[i].phrase]);
-      if (r?.complete) return { idx: i, complete: true, heard: alt };
-      if (r && !partial) partial = { idx: i, complete: false, heard: alt };
+  for (const loose of [false, true]) {
+    for (const i of order) {
+      for (const alt of alternatives) {
+        const r = matchPhrase(alt, phrases[options[i].phrase], loose);
+        if (r?.complete) return { idx: i, complete: true, heard: alt, loose };
+        if (r && !partial) partial = { idx: i, complete: false, heard: alt, loose };
+      }
     }
   }
   if (partial) return partial;
   if (metaPhrase) {
     for (const alt of alternatives) {
-      if (matchPhrase(alt, metaPhrase)) return { idx: -1, meta: 'repeat', heard: alt };
+      if (matchPhrase(alt, metaPhrase) || matchPhrase(alt, metaPhrase, true)) return { idx: -1, meta: 'repeat', heard: alt };
     }
   }
   return { idx: -1, heard: alternatives[0] || '' };

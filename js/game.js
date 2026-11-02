@@ -2,7 +2,7 @@
 // 跟語言無關的部分都在這裡，語言內容在 data.js。
 
 import { PHRASES, QUESTS, STATS, TIMES, TRIP, EVENTS, ENDINGS, META_REPEAT } from './data.js';
-import { judge } from './judge.js';
+import { judge, normalize, unvoice } from './judge.js';
 import { speak, stopSpeaking, listen, asrSupported, ttsSupported, hasJaVoice } from './speech.js';
 
 const SAVE_KEY = 'nihongo-trip-v3';
@@ -339,6 +339,29 @@ const STAR_WHY = {
   max: () => '已經滿星了！',
 };
 
+// 清濁音放寬才過關時，找出是哪個詞、哪個音說錯，給對應的發音提醒
+function voicingTip(heard, p) {
+  const h = normalize(heard);
+  for (const word of [...p.req, ...(p.full || [])].flat()) {
+    const w = normalize(word);
+    const at = unvoice(h).indexOf(unvoice(w));
+    if (!w || h.includes(w) || at < 0) continue;
+    const said = h.slice(at, at + w.length);
+    const i = [...w].findIndex((ch, k) => ch !== said[k]);
+    const toVoiced = unvoice(w[i]) === w[i];
+    // 「カード」顯示成「ガード」而不是「があど」：字數對得上時，只換掉說錯的那個字
+    const kata = ch => String.fromCharCode(ch.charCodeAt(0) + 0x60);
+    const shown = [...word].length === w.length
+      ? [...word].map((ch, k) => k !== i ? ch : /[ァ-ヶ]/.test(ch) ? kata(said[k]) : said[k]).join('')
+      : said;
+    return `🗣️ 發音小提醒：「${esc(word)}」聽起來像「${esc(shown)}」（${w[i]} → ${said[i]}），這次先算你過。<br>`
+      + (toVoiced
+        ? '日文的 か・た・ぱ 要像注音的ㄎ、ㄊ、ㄆ 輕輕送一口氣；像ㄍ、ㄉ、ㄅ 那樣不送氣，日本人容易聽成 が・だ・ば。'
+        : 'が・だ・ば 是濁音，發音時喉嚨要震動，像台語「牛（gû）」「肉（bah）」開頭的音；中文沒有這種音，容易說成 か・た・ぱ。');
+  }
+  return '🗣️ 發音小提醒：有些清音、濁音（例如 か／が、と／ど）聽起來混在一起，這次先算你過。';
+}
+
 function viewSuccess(t) {
   const c = t.choices[t.result.idx];
   const p = PHRASES[c.phrase];
@@ -347,6 +370,7 @@ function viewSuccess(t) {
       <p class="ok">✅ 通じた！對方聽懂了</p>
       <p class="heard">你說：「${esc(t.heard)}」</p>
       ${t.switched ? `<p class="tip">你表達的是「${esc(c.zh)}」，劇情就照你說的走 👍</p>` : ''}
+      ${t.result.loose ? `<p class="tip">${voicingTip(t.heard, p)}</p>` : ''}
       <p class="stars-line">${esc(p.ja)} <span class="stars">${stars(g.after)}</span></p>
       <p class="star-why">${STAR_WHY[g.why]?.(g) ?? '⭐ 星星 +1！'}</p>
       ${t.statGain ? `<p class="gain">${STATS[t.statGain.skill].emoji} ${STATS[t.statGain.skill].name} +${t.statGain.amount}</p>` : ''}
