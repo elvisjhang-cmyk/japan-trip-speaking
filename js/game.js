@@ -1,14 +1,13 @@
 // 遊戲引擎：排行程（每天三個時段）→ 地點劇情 → 玩家回合（選意思 → 學說法 → 開口）→ 熟練度與養成數值 → 事件 → 結局。
 // 跟語言無關的部分都在這裡，語言內容在 data.js。
 
-import { PHRASES, QUESTS, STATS, TIMES, TRIP, EVENTS, ENDINGS, META_REPEAT } from './data.js';
+import { PHRASES, QUESTS, STATS, TIMES, TRIP, EVENTS, ENDINGS, META_REPEAT, CONFUSED, voiceOf } from './data.js';
 import { judge, normalize, unvoice } from './judge.js';
 import { speak, stopSpeaking, listen, asrSupported, ttsSupported, hasJaVoice } from './speech.js';
 
 const SAVE_KEY = 'nihongo-trip-v3';
 const MAX_MASTERY = 4;
 const LEVEL_LABEL = ['🌱 新句子：先聽，再跟著說', '🔁 跟讀練習', '🧠 回想看看', '✨ 自然說出來'];
-const CONFUSED = [['え？', '欸？'], ['すみません、もう一度……？', '不好意思，可以再說一次嗎……？'], ['えっと……？', '呃……？']];
 
 const app = document.getElementById('app');
 
@@ -117,6 +116,10 @@ function topbar(title, homeAct = 'home') {
   </header>`;
 }
 
+// 語音素材的標註（VOICEVOX 各角色的使用條件）；換聲音時要跟 tools/make_voices.mjs 一起改
+const VOICE_CREDIT = '語音：' + ['東北ずん子', 'WhiteCUL', '冥鳴ひまり', '玄野武宏', '東北イタコ', '青山龍星', '九州そら', '雀松朱司', '波音リツ', '白上虎太郎', '麒ヶ島宗麟']
+  .map(n => `VOICEVOX:${n}`).join('、');
+
 function viewTitle() {
   const hasSave = save.started;
   return `<main class="page title">
@@ -139,6 +142,7 @@ function viewTitle() {
         : '<button class="btn primary" data-act="start">開始旅程</button>'}
     </div>
     <p class="fine">建議戴耳機、在安靜的地方玩。原型版本：5 天 4 夜、${QUESTS.length} 個地點、${ENDINGS.length} 種結局。</p>
+    <p class="fine credit">${VOICE_CREDIT}</p>
   </main>`;
 }
 
@@ -525,7 +529,7 @@ function goto(id) {
       else if (!cur.subShown) cur.quiz = makeQuiz('對方剛剛說的是？', [npc.zh, ...distractors(npc)], 0);
     }
     save.exposure[concept] = (save.exposure[concept] || 0) + 1;
-    save.heard[concept] = { ja: npc.ja, zh: npc.zh, romaji: npc.romaji };
+    save.heard[concept] = { ja: npc.ja, zh: npc.zh, romaji: npc.romaji, voice: voiceOf(cur.quest.cast[npc.who]) };
     save.listen[concept] ??= 0;
     cur.lastSpeaker = cur.quest.cast[who];
     persist();
@@ -578,7 +582,7 @@ function sayNpc(slow = false) {
   const npc = cur.node.npc;
   if (!npc) return;
   const rate = slow || npc.slow ? 0.65 : listenLevel(npc.concept) >= 2 ? 1.1 : 0.92;
-  speak(npc.ja, { rate, pitch: cur.quest.cast[npc.who].pitch });
+  speak(npc.ja, { rate, pitch: cur.quest.cast[npc.who].pitch, voice: voiceOf(cur.quest.cast[npc.who]) });
 }
 
 function finishQuest(node) {
@@ -703,7 +707,7 @@ function showNext() {
   if (events.length) {
     screen = 'event';
     render();
-    speak(events[0].ja, { rate: 0.9 });
+    speak(events[0].ja, { rate: 0.9, voice: events[0].voice });
     return;
   }
   screen = save.finished ? 'final' : 'plan';
@@ -735,7 +739,7 @@ function handleAnswer(alternatives) {
     if (r.heard) cur.face = 'confused';
     if (t.chosen === null) { t.free = false; t.feedback += ' 先選一個想表達的意思吧。'; }
     render();
-    if (r.heard) speak(ja, { pitch: who.pitch });
+    if (r.heard) speak(ja, { pitch: who.pitch, voice: voiceOf(who) });
     return;
   }
   if (!r.complete) {
@@ -830,7 +834,7 @@ const actions = {
     nextSlot();
   },
   nextEvent() { stopSpeaking(); events.shift(); showNext(); },
-  sayEvent() { speak(events[0].ja, { rate: 0.9 }); },
+  sayEvent() { speak(events[0].ja, { rate: 0.9, voice: events[0].voice }); },
   quest({ id }) { startQuest(id); },
   toggleQuiet() { save.settings.quiet = !save.settings.quiet; persist(); render(); },
   toggleSub() {
@@ -854,7 +858,7 @@ const actions = {
     render();
   },
   quizPick({ i }) { pickQuiz(Number(i)); },
-  sayHeard({ id }) { speak(save.heard[id].ja, { rate: 0.9 }); },
+  sayHeard({ id }) { const h = save.heard[id]; speak(h.ja, { rate: 0.9, voice: h.voice }); },
   choose({ i }) {
     const t = cur.turn;
     t.chosen = Number(i);

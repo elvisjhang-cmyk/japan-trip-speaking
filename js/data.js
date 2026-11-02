@@ -635,9 +635,16 @@ export const QUESTS = [
 //   day     哪一天（不寫代表每天都可能）；after 今天去過哪個地點；requires 需要的旗標或去過的地點
 //   need    數值門檻，全部達到算成功；pass 有這個旗標就直接成功（例如阿姨畫的手繪地圖）
 //   success / fail  { text, money, stamina, flag, stats, affection }
+// 玩家說錯時對方的反應
+export const CONFUSED = [['え？', '欸？'], ['すみません、もう一度……？', '不好意思，可以再說一次嗎……？'], ['えっと……？', '呃……？']];
+
+// 每個角色用哪個 VOICEVOX 聲音：用立繪的檔名當代號，浴衣的結衣跟平常同一個聲音。
+// 句子的示範發音用 guide，車站廣播用 announce。
+export const voiceOf = who => (who?.img || 'guide').replace(/_yukata$/, '');
+
 export const EVENTS = [
   {
-    id: 'delay', at: 'morning', day: 2, emoji: '🚃', title: '電車誤點',
+    id: 'delay', at: 'morning', day: 2, voice: 'announce', emoji: '🚃', title: '電車誤點',
     story: '早上在車站，廣播一直重複同一段話，大家開始往另一個月台走……',
     ja: 'ただいま、電車が遅れております。', kana: 'ただいま、でんしゃがおくれております。', romaji: 'tadaima, densha ga okurete orimasu.', zh: '目前電車延誤中。', keys: [['遅れております', '延誤中']],
     need: { listen: 10 },
@@ -645,7 +652,7 @@ export const EVENTS = [
     fail: { text: '你聽不懂廣播，在月台傻等了 30 分鐘才發現電車延誤。好累……', stamina: -25 },
   },
   {
-    id: 'lasttrain', at: 'night', after: 'izakaya', emoji: '🌃', title: '末班車',
+    id: 'lasttrain', at: 'night', after: 'izakaya', voice: 'announce', emoji: '🌃', title: '末班車',
     story: '從居酒屋出來已經快十二點。車站的廣播在說什麼？',
     ja: 'まもなく、最終電車が発車します。', kana: 'まもなく、さいしゅうでんしゃがはっしゃします。', romaji: 'mamonaku, saishuu densha ga hassha shimasu.', zh: '最後一班電車即將發車。', keys: [['最終電車', '末班車'], ['発車します', '要開了']],
     need: { listen: 25, road: 15 }, pass: 'hand_map',
@@ -653,7 +660,7 @@ export const EVENTS = [
     fail: { text: '等你搞懂廣播的意思，末班車已經開走了。只好搭計程車回旅館。', money: -6000 },
   },
   {
-    id: 'yui_line', at: 'morning', day: 3, requires: 'matsuri', emoji: '📱', title: '結衣傳來訊息',
+    id: 'yui_line', at: 'morning', day: 3, requires: 'matsuri', voice: 'yui', emoji: '📱', title: '結衣傳來訊息',
     story: '早上手機響了，是結衣傳來的 LINE。',
     ja: '昨日は楽しかったね！ また連絡してね。', kana: 'きのうはたのしかったね！ またれんらくしてね。', romaji: 'kinou wa tanoshikatta ne! mata renraku shite ne.', zh: '昨天好開心喔！要再跟我聯絡喔。', keys: [['楽しかった', '很開心'], ['連絡してね', '要聯絡喔']],
     need: { chat: 25 },

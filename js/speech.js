@@ -4,24 +4,47 @@ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 export const asrSupported = !!SR;
 export const ttsSupported = 'speechSynthesis' in window;
 
-let voice = null;
+let sysVoice = null;
 function pickVoice() {
   const ja = speechSynthesis.getVoices().filter(v => v.lang.replace('_', '-').toLowerCase().startsWith('ja'));
-  voice = ja.find(v => /Kyoko|Otoya|O-ren|Google/i.test(v.name)) || ja[0] || null;
+  sysVoice = ja.find(v => /Kyoko|Otoya|O-ren|Google/i.test(v.name)) || ja[0] || null;
 }
 if (ttsSupported) {
   pickVoice();
   speechSynthesis.addEventListener?.('voiceschanged', pickVoice);
 }
-export const hasJaVoice = () => !!voice;
+export const hasJaVoice = () => !!sysVoice;
 
-export function speak(text, { rate = 1, pitch = 1 } = {}) {
+// 預先用 VOICEVOX 做好的音檔：audio/index.json 是「聲音|台詞」對應到檔名的表
+// 找得到就播音檔，找不到（例如之後新加的台詞）才用瀏覽器的語音合成
+const AUDIO_DIR = 'audio/';
+let clips = {};
+fetch(AUDIO_DIR + 'index.json').then(r => r.ok ? r.json() : {}).then(m => { clips = m; }).catch(() => {});
+let playing = null;
+
+export function speak(text, { rate = 1, pitch = 1, voice = 'guide' } = {}) {
+  stopSpeaking();
+  const file = clips[`${voice}|${text}`];
+  if (file) return playClip(AUDIO_DIR + file, rate);
+  return synth(text, rate, pitch);
+}
+
+function playClip(src, rate) {
+  return new Promise(resolve => {
+    const a = new Audio(src);
+    a.playbackRate = rate;   // 慢速播放時保持音高（瀏覽器預設 preservesPitch）
+    a.onended = a.onerror = a.onpause = () => resolve();
+    playing = a;
+    a.play().catch(() => resolve());
+  });
+}
+
+function synth(text, rate, pitch) {
   return new Promise(resolve => {
     if (!ttsSupported) return resolve();
-    speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text.replace(/……/g, '、'));
     u.lang = 'ja-JP';
-    if (voice) u.voice = voice;
+    if (sysVoice) u.voice = sysVoice;
     u.rate = rate;
     u.pitch = pitch;
     let done = false;
@@ -35,6 +58,7 @@ export function speak(text, { rate = 1, pitch = 1 } = {}) {
 }
 
 export function stopSpeaking() {
+  if (playing) { playing.pause(); playing = null; }
   if (ttsSupported) speechSynthesis.cancel();
 }
 
