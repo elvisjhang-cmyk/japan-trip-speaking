@@ -121,8 +121,11 @@ function viewTitle() {
   const hasSave = save.started;
   return `<main class="page title">
     <div class="hero">
-      <div class="hero-emoji">🗾</div>
-      <h1>日本自由行<span>口說冒險</span></h1>
+      <div class="title-ticket">
+        <p class="route"><span>台北</span><i>→</i><span>東京</span></p>
+        <h1>日本自由行・口說冒險</h1>
+        <p class="ticket-meta"><span>5 日間</span><span>有効</span></p>
+      </div>
       <p class="lead">你是第一次來日本的旅客。<br>排好每天的行程，開口說日文，看看這趟旅程會怎麼結束。</p>
     </div>
     <ul class="checks">
@@ -182,10 +185,14 @@ function viewPlan() {
       : save.money < q.cost ? '錢不夠' : save.stamina < q.stamina ? '太累了，先休息一下' : '';
     const ok = open && !why;
     return `<button class="quest ${save.done.includes(q.id) ? 'done' : ''} ${ok ? '' : 'locked'} ${q.hidden ? 'date' : ''}" ${ok ? `data-act="quest" data-id="${q.id}"` : 'disabled'}>
-      <span class="q-emoji">${open ? q.emoji : '🔒'}</span>
-      <span class="q-body"><strong>${open ? esc(q.title) : '？？？'}</strong><small>${esc(open ? q.desc : save.flags[q.requires] ? q.waitDesc : q.lockedDesc)}</small>
-        ${open ? `<span class="tags"><span>${q.cost ? yen(q.cost) : '免費'}</span><span>⚡ ${q.stamina}</span><span>${STATS[q.skill].emoji} ${STATS[q.skill].name}</span></span>` : ''}</span>
-      <span class="q-state">${why ? `<em>${why}</em>` : save.done.includes(q.id) ? '✓ 去過' : ''}</span>
+      <span class="q-main">
+        <span class="q-emoji">${open ? q.emoji : '🔒'}</span>
+        <span class="q-body"><strong>${open ? esc(q.title) : '？？？'}</strong><small>${esc(open ? q.desc : save.flags[q.requires] ? q.waitDesc : q.lockedDesc)}</small>
+          ${open ? `<span class="q-skill">${STATS[q.skill].emoji} ${STATS[q.skill].name}</span>` : ''}
+          ${why ? `<em class="q-why">${why}</em>` : ''}</span>
+      </span>
+      ${open ? `<span class="q-stub"><b>${q.cost ? yen(q.cost) : '免費'}</b><span>⚡ ${q.stamina}</span></span>` : ''}
+      ${save.done.includes(q.id) ? '<span class="stamp">済</span>' : ''}
     </button>`;
   };
   const night = save.slot === slotsOf(save.day) - 1;
@@ -229,20 +236,20 @@ function viewScene() {
       ${cg || (portrait
         ? `<img class="portrait ${talking ? 'talking' : ''}" src="${ASSET_DIR + portrait}" alt="${esc(speaker.name)}">`
         : `<div class="avatar ${talking ? 'talking' : ''}">${speaker.emoji}</div>`)}
-      <div class="who">${esc(speaker.name)}</div>
     </div>
     ${node.narr ? `<p class="narr">${esc(node.narr)}</p>` : ''}
-    ${npc ? viewBubble(npc) : ''}
+    ${npc ? viewBubble(npc, talking) : ''}
     <section class="panel">${viewPanel()}</section>
   </main>`;
 }
 
-function viewBubble(npc) {
+function viewBubble(npc, who) {
   const quiz = cur.quiz;
   const pending = quiz && quiz.picked === null;
   const show = !pending && (cur.subShown || cur.subRevealed || quiz);
   const answer = quiz?.options.find(o => o.correct)?.text;
   return `<div class="bubble">
+    ${who ? `<span class="nameplate ${who.img?.startsWith('yui') ? 'yui' : ''}">${esc(who.name)}</span>` : ''}
     ${show
       ? `<p class="ja">${esc(npc.ja)}</p>${differs(npc.kana, npc.ja) ? `<p class="kana">${esc(npc.kana)}</p>` : ''}
          ${npc.romaji ? `<p class="romaji">${esc(npc.romaji)}</p>` : ''}<p class="zh">${esc(npc.zh)}</p>
